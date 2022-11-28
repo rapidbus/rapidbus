@@ -84,7 +84,7 @@ void mqtt_pubMsg(char *message, uint16_t message_len) {
   deliveredtoken = 0;
   rc = MQTTAsync_sendMessage(client, MQTT_TOPIC, &pubmsg, &opts);
   if (rc == MQTTASYNC_SUCCESS) {
-    printf("mqtt_pubMsg: Message published OK!");
+    printf("mqtt_pubMsg: Message published OK!\n");
   } else if (rc == MQTTASYNC_DISCONNECTED) {
     printf("mqtt_pubMsg: Failed to start sendMessage - The client is "
            "disconnected. (retcode: %d)\n",

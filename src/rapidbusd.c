@@ -1,3 +1,4 @@
+#include "config.h"
 #include "modbus.h"
 #include "mqtt.h"
 #include "timers.h"
@@ -16,6 +17,8 @@ volatile MQTTAsync_token deliveredtoken;
 int finished = 0;
 MQTTAsync client;
 
+struct query_t query;
+
 timer_t timerid;
 int ser;
 
@@ -28,7 +31,7 @@ struct ml_task ml_tasks[MAX_TASKS_COUNT];
 
 void mqtt_connet_to() {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
-  MQTTAsync_token token;
+  // MQTTAsync_token token;
   int rc;
   MQTTAsync_create(&client, MQTT_ADDRESS, MQTT_CLIENTID,
                    MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -154,7 +157,14 @@ void timer_callback(int sig) {
   float value;
   uint8_t ret_modbus_data[1024];
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = {0x01, 0x03, 0x00, 0x09, 0x00, 0x02, 0x14, 0x09};
+  uint8_t modbus_request[] = {query.modbus_id,
+                              query.modbus_function,
+                              0x00,
+                              query.start_register,
+                              0x00,
+                              query.wcount,
+                              0x14,
+                              0x09};
 
   // printf("Sig called: %i %li\n", sig, ms);
   for (uint8_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -167,7 +177,7 @@ void timer_callback(int sig) {
         value = get_modbus_data(modbus_request, sizeof(modbus_request),
                                 ret_modbus_data);
         sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
-        printf("%s", msg);
+        printf("%s\n", msg);
         mqtt_pubMsg(msg, strlen(msg));
         ml_tasks[a].last_run = ms;
       }
@@ -176,6 +186,8 @@ void timer_callback(int sig) {
 }
 
 int main() {
+  read_config(&query);
+
   mqtt_connet_to();
 
   start_timer(&timerid);

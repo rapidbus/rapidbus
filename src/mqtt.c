@@ -1,5 +1,6 @@
 #include "mqtt.h"
 #include "MQTTAsync.h"
+#include "timers.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +31,7 @@ void mqtt_onDisconnect(void *context, MQTTAsync_successData *response) {
 
 void mqtt_onSend(void *context, MQTTAsync_successData *response) {
   // MQTTAsync_disconnectOptions opts = MQTTAsync_disconnectOptions_initializer;
-  int rc;
+  // int rc;
   printf("Message with token value %d delivery confirmed\n", response->token);
   //    opts.onSuccess = mqtt_onDisconnect;
   //    opts.context = client;
@@ -69,15 +70,15 @@ void mqtt_onConnect(void *context, MQTTAsync_successData *response) {
   }
 }
 
-void mqtt_pubMsg(void) {
+void mqtt_pubMsg(char *message, uint16_t message_len) {
   int rc;
   MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
   MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
   printf("Publishing message to MQTT broker!\n");
   opts.onSuccess = mqtt_onSend;
   opts.context = client;
-  pubmsg.payload = MQTT_PAYLOAD;
-  pubmsg.payloadlen = strlen(MQTT_PAYLOAD);
+  pubmsg.payload = message;
+  pubmsg.payloadlen = message_len;
   pubmsg.qos = MQTT_QOS;
   pubmsg.retained = 0;
   deliveredtoken = 0;

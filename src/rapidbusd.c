@@ -104,8 +104,7 @@ int open_port(void) {
   return (fd);
 }
 
-void get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
-  uint8_t rb[10];
+float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   uint32_t wait_for_response_for_ms = 40;
 
   // printf("Requesting data...\n");
@@ -113,7 +112,7 @@ void get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   int result = tcflush(ser, TCIOFLUSH);
   if (result) {
     perror("PROBLEM!! tcflush failed"); // just a warning, not a fatal error
-    return;
+    return -1;
   }
   int8_t n = write(ser, modbus_request, r_count);
   if (n != r_count) {
@@ -127,7 +126,7 @@ void get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   if (!bytes_avail) {
     printf("PROBLEM: Sensor did not respond within %ims. Skipping read.\n",
            wait_for_response_for_ms);
-    return;
+    return -1;
   }
   int8_t readbytes = read(ser, rb, bytes_avail);
   for (uint8_t a = 0; a < readbytes; a++) {
@@ -138,17 +137,22 @@ void get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   if (!checkModbusCRC(rb, readbytes - 2, rb[readbytes - 2],
                       rb[readbytes - 1])) {
     printf("CRC not correct - skipping parsing the modbus packet.\n");
-    return;
+    return -1;
   };
 
   for (uint8_t a = 3; a < 3 + 4; a++) {
     float_helper.b[a - 3] = rb[a];
   }
   printf("Value: %f\n", float_helper.f);
-  memset(rb, 0, sizeof(rb));
+  // memset(rb, 0, sizeof(rb));
+  // return readbytes;
+  return float_helper.f;
 }
 
 void timer_callback(int sig) {
+  char msg[1024];
+  float value;
+  uint8_t ret_modbus_data[1024];
   uint64_t ms = ts_millis();
   uint8_t modbus_request[] = {0x01, 0x03, 0x00, 0x09, 0x00, 0x02, 0x14, 0x09};
 
@@ -160,8 +164,11 @@ void timer_callback(int sig) {
       if (ml_tasks[a].period_ms <= ms - ml_tasks[a].last_run) {
         printf("!!! Running task ID %d name: %s @%li ", a, ml_tasks[a].name,
                ms);
-        get_modbus_data(modbus_request, sizeof(modbus_request));
-        mqtt_pubMsg();
+        value = get_modbus_data(modbus_request, sizeof(modbus_request),
+                                ret_modbus_data);
+        sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
+        printf("%s", msg);
+        mqtt_pubMsg(msg, strlen(msg));
         ml_tasks[a].last_run = ms;
       }
     }

@@ -1,12 +1,12 @@
-CC=cc
-CFLAGS=-I.
+CC=gcc
+CFLAGS=-std=c99
 
 .PHONY: clean check
 
-all: clean check rapidbusd
+all: clean rapidbusd
 
 rapidbusd: rapidbusd
-	$(CC) -o rapidbusd rapidbusd.c timers.c modbus.c mqtt.c -Wall -lrt -lpaho-mqtt3a
+	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c timers.c modbus.c mqtt.c -Wall -lrt -lpaho-mqtt3a
 
 clean:
 	rm -f rapidbusd rapidbusd.o
@@ -18,6 +18,3 @@ run: all
 check:
 	cppcheck *.c *.h
 	clang-format -i *.c *.h
-
-time: timertest.o
-	$(CC) -o timertest timertest.c -lrt

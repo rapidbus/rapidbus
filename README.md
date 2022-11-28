@@ -20,6 +20,12 @@ Ubuntu pre-impish (Ubuntu 21.10) not supported they dont include package https:/
 apt install libpaho-mqtt-dev libpaho-mqtt1.3
 ```
 
+#### Ubuntu 22.04
+
+```
+apt install clang-tools-11 libpaho-mqtt-dev libpaho-mqtt1.3
+```
+
 ### RHEL
 
 #### RHEL 7

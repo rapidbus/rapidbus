@@ -25,7 +25,7 @@ apt install libpaho-mqtt-dev libpaho-mqtt1.3
 #### RHEL 7
 
 ```
-yum install cppcheck
+yum install cppcheck rpm-build
 git clone https://github.com/eclipse/paho.mqtt.c.git
 cd org.eclipse.paho.mqtt.c.git
 make

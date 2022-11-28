@@ -26,4 +26,8 @@ apt install libpaho-mqtt-dev libpaho-mqtt1.3
 
 ```
 yum install cppcheck
+git clone https://github.com/eclipse/paho.mqtt.c.git
+cd org.eclipse.paho.mqtt.c.git
+make
+sudo make install
 ```

@@ -13,23 +13,26 @@
 #include <termios.h> /* for changing baud etc */
 #include <unistd.h>  /* UNIX standard function definitions */
 
+#define MAX_TASKS_COUNT 256
+task_t tasks[MAX_TASKS_COUNT];
+
 volatile MQTTAsync_token deliveredtoken;
 int finished = 0;
 MQTTAsync client;
-
-struct query_t query;
+uint8_t mqtt_connected = 0;
 
 timer_t timerid;
 int ser;
 
+// helper union to interpert 4 bytes in different types
 union {
   float f;
+  uint32_t u;
+  int32_t i;
   uint8_t b[4];
-} float_helper;
+} b4_helper;
 
-struct ml_task ml_tasks[MAX_TASKS_COUNT];
-
-void mqtt_connet_to() {
+void mqtt_connect_to() {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   // MQTTAsync_token token;
   int rc;
@@ -49,7 +52,7 @@ void mqtt_connet_to() {
 
 int open_port(void) {
   int fd; /* File descriptor for the port */
-  char serial_port[] = "/dev/ttyUSB1";
+  char serial_port[] = "/dev/ttyUSB2";
   // char serial_port[] = "/dev/tty.usbserial-DM0105NG";
 
   printf("About to open serial port %s\n", serial_port);
@@ -110,7 +113,11 @@ int open_port(void) {
 float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   uint32_t wait_for_response_for_ms = 40;
 
-  // printf("Requesting data...\n");
+  printf("Requesting data... ");
+  for (uint8_t a = 0; a < r_count; a++) {
+    printf(" %X", modbus_request[a]);
+  }
+  printf("\n");
   // flushing old data
   int result = tcflush(ser, TCIOFLUSH);
   if (result) {
@@ -132,9 +139,11 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
     return -1;
   }
   int8_t readbytes = read(ser, rb, bytes_avail);
+  printf("Received data  ...  ");
   for (uint8_t a = 0; a < readbytes; a++) {
     printf("%X ", rb[a]);
   }
+  printf("\n");
 
   // check MODBUS CRC
   if (!checkModbusCRC(rb, readbytes - 2, rb[readbytes - 2],
@@ -144,12 +153,12 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   };
 
   for (uint8_t a = 3; a < 3 + 4; a++) {
-    float_helper.b[a - 3] = rb[a];
+    b4_helper.b[a - 3] = rb[a];
   }
-  printf("Value: %f\n", float_helper.f);
+  printf("Value: %f\n", b4_helper.f);
   // memset(rb, 0, sizeof(rb));
   // return readbytes;
-  return float_helper.f;
+  return b4_helper.f;
 }
 
 void timer_callback(int sig) {
@@ -157,57 +166,65 @@ void timer_callback(int sig) {
   float value;
   uint8_t ret_modbus_data[1024];
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = {query.modbus_id,
-                              query.modbus_function,
+  uint8_t modbus_request[] = {tasks[0].modbus_id,
+                              tasks[0].modbus_function,
                               0x00,
-                              query.start_register,
+                              tasks[0].start_register,
                               0x00,
-                              query.wcount,
+                              tasks[0].wcount,
                               0x14,
                               0x09};
 
-  // printf("Sig called: %i %li\n", sig, ms);
-  for (uint8_t a = 0; a < MAX_TASKS_COUNT; a++) {
-    if (ml_tasks[a].state == 1) {
-      // printf(" Task ID %d period_ms: %i last_run: %li\n", a,
-      //       ml_tasks[a].period_ms, ml_tasks[a].last_run);
-      if (ml_tasks[a].period_ms <= ms - ml_tasks[a].last_run) {
-        printf("!!! Running task ID %d name: %s @%li ", a, ml_tasks[a].name,
-               ms);
+  stop_timer(&timerid);
+  for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
+    if (tasks[a].state == 1) {
+      printf("Evaluating task ID %d for execution ... period_ms: %i last_run: "
+             "%li\n",
+             a, tasks[a].period_ms, tasks[a].last_run);
+      if (tasks[a].period_ms <= ms - tasks[a].last_run) {
+        printf("Decided to execute task ID %d query_name: %s @%li period: %i\n",
+               a, tasks[a].query_name, ms, tasks[a].period_ms);
         value = get_modbus_data(modbus_request, sizeof(modbus_request),
                                 ret_modbus_data);
         sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
         printf("%s\n", msg);
         mqtt_pubMsg(msg, strlen(msg));
-        ml_tasks[a].last_run = ms;
+        tasks[a].last_run = ms;
       }
     }
   }
+  start_timer(&timerid);
 }
 
 int main() {
-  read_config(&query);
+  printf("Initial struct def values for config (max tasks: %i)\n",
+         MAX_TASKS_COUNT);
+  for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
+    tasks[a].state = 0;
+  }
 
-  mqtt_connet_to();
+  printf("Initialize configuration\n");
+  read_config(tasks);
+
+  mqtt_connect_to();
+
+  while (!mqtt_connected) {
+    printf("Waiting for MQTT connection to broker...\n");
+    sleep(1);
+  }
 
   start_timer(&timerid);
   (void)signal(SIGALRM, timer_callback);
   ser = open_port();
   printf("Port opened\n");
 
-  // initial struct def values
-  for (uint8_t a = 0; a < MAX_TASKS_COUNT; a++) {
-    ml_tasks[a].state = 0;
-  }
-
-  printf("Initialize default config options\n");
-
-  strcpy(ml_tasks[0].name, "task1");
-  ml_tasks[0].state = 1;
-  ml_tasks[0].period_ms = 500;
-  ml_tasks[0].last_run = ts_millis();
-
   while (1) {
+    if (!mqtt_connected) {
+      printf("Disconnected from MQTT broker! Try to re-initialize "
+             "connection...\n");
+      mqtt_connect_to();
+      sleep(10);
+    }
   }
 
   close(ser);

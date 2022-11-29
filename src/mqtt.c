@@ -7,8 +7,8 @@
 #include <unistd.h>
 
 extern volatile MQTTAsync_token deliveredtoken;
-extern int finished;
 extern MQTTAsync client;
+extern uint8_t mqtt_connected;
 
 void mqtt_connlost(void *context, char *cause) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
@@ -20,30 +20,22 @@ void mqtt_connlost(void *context, char *cause) {
   conn_opts.cleansession = 1;
   if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
     printf("Failed to start connect, return code %d\n", rc);
-    finished = 1;
+    mqtt_connected = 0;
   }
 }
 
 void mqtt_onDisconnect(void *context, MQTTAsync_successData *response) {
   printf("Successful disconnection\n");
-  finished = 1;
+  mqtt_connected = 0;
 }
 
 void mqtt_onSend(void *context, MQTTAsync_successData *response) {
-  // MQTTAsync_disconnectOptions opts = MQTTAsync_disconnectOptions_initializer;
-  // int rc;
   printf("Message with token value %d delivery confirmed\n", response->token);
-  //    opts.onSuccess = mqtt_onDisconnect;
-  //    opts.context = client;
-  //    if ((rc = MQTTAsync_disconnect(client, &opts)) != MQTTASYNC_SUCCESS) {
-  //        printf("Failed to start sendMessage, return code %d\n", rc);
-  //        exit(EXIT_FAILURE);
-  //    }
 }
 
 void mqtt_onConnectFailure(void *context, MQTTAsync_failureData *response) {
   printf("Connect failed, rc %d\n", response ? response->code : 0);
-  finished = 1;
+  mqtt_connected = 0;
 }
 
 void mqtt_onConnect(void *context, MQTTAsync_successData *response) {
@@ -51,6 +43,7 @@ void mqtt_onConnect(void *context, MQTTAsync_successData *response) {
   MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
   MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
   printf("Successful connection to MQTT broker!\n");
+  mqtt_connected = 1;
   opts.onSuccess = mqtt_onSend;
   opts.context = client;
   pubmsg.payload = MQTT_PAYLOAD;

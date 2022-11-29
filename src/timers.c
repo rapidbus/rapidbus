@@ -10,7 +10,7 @@ void start_timer(timer_t *timerid) {
   struct itimerspec value;
 
   value.it_value.tv_sec = 0;
-  value.it_value.tv_nsec = 100 * 1000 * 1000;
+  value.it_value.tv_nsec = 10 * 1000 * 1000;
 
   value.it_interval.tv_sec = value.it_value.tv_sec;
   value.it_interval.tv_nsec = value.it_value.tv_nsec;

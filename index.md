@@ -6,17 +6,26 @@ RapidBus is used in OT/IT environments where its necessary to bridge the physica
 
 ## Configuration of serial bus interface
 
-Make sure that the user under which the rapidbusd will be running has permissions to access your desired serial port. In Debian 11 this means adding the user to the group "dialout".
+Physical serial interfaces are a shared physical medium, but can contain multiple sensors with multiple baud and serial settings (for example using RS-485 signalling), therefore in RapidBus one physical interface can contain several "networks". A network is a set of devices (sensors/nodes) sitting on the same physical serial network with the same baud and serial settings with a unique MODBUS ID.
+
+There can be several networks on one physical interface.
+
+rapidbusd is designed to only manage one physical serial interface with one or multiple virtual networks. This is by design as scheduling tasks on multiple physical interfaces for multiple devices on multiple vitual networks is not trivial to do automagically.
+
+What you are defining in the rapidbusd configuration are the virtual networks that each individual devicel will fall into with its serial interface configuration:
 
 ```
-s,/dev/ttyUSB1,38400,8N1
+v,net1,/dev/ttyUSB0,9600,8N1
+v,net2,/dev/ttyUSB0,38400,8N1
 ```
 
-Where:
-* s = this line contained serial configuration options
-* /dev/ttyUSB1 = path to the bus device file
-* 38400 = baud rate (available options: 38400)
+Where in above example:
+* v = mark identifying virtual network configuration in this line
+* /dev/ttyUSB1 = path to the serial bus device file (this must be the same for all virtual network interfaces!!)
+* 38400 = baud rate (available options: 9600, 38400)
 * 8N1 = 8 data bits, no parity, one stop bit (available options: 8N1)
+
+Make sure that the user under which the rapidbusd will be running has permissions to access your desired serial port. In Debian 11 this means adding the user to the group "dialout".
 
 ## Configuration of clients (sensors)
 
@@ -29,9 +38,10 @@ Which sensors RapidBus contacts and what data are read in what frequency (period
 Example of configuration file (rapidbus-XXX.conf) (comment lines start with "#" and are ignored):
 
 ```
-q,sensor1,queryname1,1,3,5,2,100
-q,sensor1,queryname2,1,3,9,2,200
-q,sensor2,queryname1,2,3,9,2,100
+q,sensor1,net1,queryname1,1,3,5,2,100
+q,sensor1,net1,queryname2,1,3,9,2,200
+q,sensor1,net2,queryname2,1,3,9,2,200
+q,sensor2,net3,queryname1,2,3,9,2,100
 ```
 
 Where for first line:

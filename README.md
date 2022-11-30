@@ -1,4 +1,12 @@
+# RapidBus
+
+RapidBus is a bridging application between Operational Technoologies and Information Technologies (OT/IT) connecting serial-enabled sensors to MQTT broker. Essentially forwarding metering data from serial interface over MODBUS RTU to MQTT broker.
+
+Its written in C and targeted to be used on Linux platforms on the edge of Industry 4.0 networks. For detailed documentation see here: https://rapidbus.github.io/rapidbus/
+
 ## Preparing development environment
+
+If you are interested in code development read further.
 
 ### Debian
 

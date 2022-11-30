@@ -1,5 +1,10 @@
 # RapidBus
 
+<a href="https://scan.coverity.com/projects/rapidbus-rapidbus">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/27066/badge.svg"/>
+</a>
+
 RapidBus is a bridging application between Operational Technoologies and Information Technologies (OT/IT) connecting serial-enabled sensors to MQTT broker. Essentially forwarding metering data from serial interface over MODBUS RTU to MQTT broker.
 
 Its written in C and targeted to be used on Linux platforms on the edge of Industry 4.0 networks. For detailed documentation see here: https://rapidbus.github.io/rapidbus/

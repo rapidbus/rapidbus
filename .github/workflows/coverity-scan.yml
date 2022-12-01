@@ -9,15 +9,17 @@ on:
 
 jobs:
   scan-latest:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    container:
+      image: debian:11
     steps:
       - uses: actions/checkout@v2
       - name: Fetch Dependencies
         run: |
           set -x
           set -e
-          sudo apt update
-          sudo apt -y install \
+          sudo apt-get update
+          sudo apt-get -y install \
             git \
             build-essential \
             autoconf-archive \

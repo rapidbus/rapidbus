@@ -70,7 +70,10 @@ int open_port(void) {
     perror("tcflush failed"); // just a warning, not a fatal error
   }
 
-  fcntl(fd, F_SETFL, FNDELAY);
+  if (fcntl(fd, F_SETFL, FNDELAY) == -1) {
+    printf("Error setting up serial interface. Error number: %i\n", errno);
+    exit(2);
+  }
 
   struct termios options;
 

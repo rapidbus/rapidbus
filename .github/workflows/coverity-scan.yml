@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
+# Copyright (c) 2022 - 2022 Marcel Hecko <marcel.hecko@rapidbus.org>
+
+name: Coverity Scan
+on:
+  schedule:
+    - cron: '0 6 * * *' # Daily at 6:00 UTC
+
+jobs:
+  scan-latest:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch Dependencies
+        run: |
+          set -x
+          set -e
+          sudo apt update
+          sudo apt -y install \
+            git \
+            build-essential \
+            autoconf-archive \
+            clang-tools-11 \
+            libpaho-mqtt-dev \
+            libpaho-mqtt1.3
+      - name: Download Coverity Build Tool
+        run: |
+          wget -q https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=rapidbus%2Frapidbus" -O coverity_tool.tgz
+          mkdir coverity_tool
+          tar xzf coverity_tool.tgz --strip 1 -C coverity_tool
+          rm coverity_tool.tgz
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+
+      - name: Debug
+        run: |
+          pwd
+          ls -al
+
+      - name: Build
+        run: |
+          export PATH=`pwd`/coverity_tools/bin:$PATH
+          ( cov-build --dir cov-int make -j 3 )
+          cat cov-int/build-log.txt
+
+      - name: Submit the result to Coverity Scan
+        run: |
+          tar -czvf rapidbus.tar.gz cov-int
+          curl \
+            --form token=$TOKEN \
+            --form email=maco@blava.net \
+            --form file=@rapidbus.tar.gz \
+            --form version=main \
+            --form description="`git rev-parse HEAD`" \
+            https://scan.coverity.com/builds?project=rapidbus%2Frapidbus
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}

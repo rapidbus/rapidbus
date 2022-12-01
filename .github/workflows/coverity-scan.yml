@@ -40,11 +40,13 @@ jobs:
         run: |
           pwd
           ls -al
+          ls -al coverity_tool
 
       - name: Build
         run: |
-          export PATH=`pwd`/coverity_tools/bin:$PATH
-          ( cov-build --dir cov-int make -j 3 )
+          export PATH=`pwd`/coverity_tool/bin:$PATH
+          echo $PATH
+          cov-build --dir cov-int make -j 3
           cat cov-int/build-log.txt
 
       - name: Submit the result to Coverity Scan

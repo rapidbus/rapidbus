@@ -21,6 +21,7 @@ jobs:
           apt-get update
           apt-get -y install \
             git \
+            wget \
             build-essential \
             autoconf-archive \
             clang-tools-11 \

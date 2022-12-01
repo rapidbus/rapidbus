@@ -52,6 +52,7 @@ jobs:
 
       - name: Submit the result to Coverity Scan
         run: |
+          cd src
           tar -czvf rapidbus.tar.gz cov-int
           curl \
             --form token=$TOKEN \

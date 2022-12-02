@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum ias { f32, s32, u32, s16 };
+
 typedef struct task_t {
   uint8_t state;
   uint64_t last_run;
@@ -16,6 +18,8 @@ typedef struct task_t {
   uint8_t modbus_function;
   uint8_t start_register;
   uint8_t wcount;
+  uint8_t offset;
+  uint8_t interpret_as;
 } task_t;
 
 void read_config(task_t *tasks);

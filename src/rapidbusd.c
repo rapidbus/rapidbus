@@ -20,6 +20,7 @@ volatile MQTTAsync_token deliveredtoken;
 int finished = 0;
 MQTTAsync client;
 uint8_t mqtt_connected = 0;
+mqtt_conf_t mqtt_config;
 
 timer_t timerid;
 int ser;
@@ -32,11 +33,11 @@ union {
   uint8_t b[4];
 } b4_helper;
 
-void mqtt_connect_to() {
+void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   // MQTTAsync_token token;
   int rc;
-  MQTTAsync_create(&client, MQTT_ADDRESS, MQTT_CLIENTID,
+  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id,
                    MQTTCLIENT_PERSISTENCE_NONE, NULL);
   MQTTAsync_setCallbacks(client, NULL, mqtt_connlost, NULL, NULL);
   conn_opts.keepAliveInterval = 20;
@@ -200,6 +201,7 @@ void timer_callback(int sig) {
 }
 
 int main() {
+
   printf("Initial struct def values for config (max tasks: %i)\n",
          MAX_TASKS_COUNT);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -207,9 +209,9 @@ int main() {
   }
 
   printf("Initialize configuration\n");
-  read_config(tasks);
+  read_config(&mqtt_config, tasks);
 
-  mqtt_connect_to();
+  mqtt_connect_to(&mqtt_config);
 
   while (!mqtt_connected) {
     printf("Waiting for MQTT connection to broker...\n");
@@ -225,7 +227,7 @@ int main() {
     if (!mqtt_connected) {
       printf("Disconnected from MQTT broker! Try to re-initialize "
              "connection...\n");
-      mqtt_connect_to();
+      mqtt_connect_to(&mqtt_config);
       sleep(10);
     }
   }

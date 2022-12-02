@@ -1,6 +1,6 @@
 #include "config.h"
 
-void read_config(task_t *tasks) {
+void read_config(mqtt_conf_t *mqtt_config, task_t *tasks) {
   FILE *fp;
   char line[256];
   char *ch;
@@ -15,6 +15,53 @@ void read_config(task_t *tasks) {
   }
   // getting list of queries from config file
   while (fgets(line, 256, fp) != NULL) {
+    if (line[0] == 'm') {
+      for (uint8_t a = 0; a < strlen(line); a++) {
+        if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
+          printf("Found strange character on position %u - ending query line "
+                 "definition on this position!\n",
+                 a);
+          line[a] = '\0';
+        }
+      }
+      printf("Parsing config line: %s\n", line);
+      pos = 0;
+      ch = strtok(line, ",");
+      while (ch != NULL) {
+        switch (pos) {
+        case 0:
+          printf("Query line mark: %s (pos %u)\n", ch, pos);
+          break;
+        case 1:
+          printf("Sanitizing address: %s (%u)\n", ch, pos);
+          strcpy(mqtt_config->addr, ch);
+          break;
+        case 2:
+          printf("Sanitizing client ID: %s (%u)\n", ch, pos);
+          strcpy(mqtt_config->client_id, ch);
+          break;
+        case 3:
+          printf("Sanitizing MQTT topic: %s (%u)\n", ch, pos);
+          strcpy(mqtt_config->topic, ch);
+          break;
+        default:
+          printf("We should never get here when parsing config file - probably "
+                 "config file is incorrectly defined (maybe too many positions "
+                 "in line?). Pos: %u\n",
+                 pos);
+          exit(11);
+        }
+        ch = strtok(NULL, ",");
+        pos++;
+      }
+      if (pos != 4) {
+        printf(
+            "Problem parsing config line! Needs 4 configuration positions for "
+            "query definition, but found %i\n",
+            pos);
+        exit(10);
+      }
+    }
     if (line[0] == 'q') {
       for (uint8_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
@@ -97,9 +144,12 @@ void read_config(task_t *tasks) {
     } else {
       continue;
     }
-    printf("Task loaded from config file:\n");
+    printf("MQTT config loaded from config file:\n");
+    printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n",
+           mqtt_config->addr, mqtt_config->client_id, mqtt_config->topic);
+    printf("Tasks loaded from config file:\n");
     for (uint8_t a = 0; a < qi; a++) {
-      printf("  Task ID: %u\n  MODBUS ID: %u\n  MODBUS function: %u\n  Start "
+      printf("=>Task ID: %u\n  MODBUS ID: %u\n  MODBUS function: %u\n  Start "
              "register:%u\n  "
              "Number of words to read: %u\n  Query period [ms]: %u\n  "
              "Interpret as: %u\n",

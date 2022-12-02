@@ -1,5 +1,6 @@
 #include "mqtt.h"
 #include "MQTTAsync.h"
+#include "config.h"
 #include "timers.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,7 @@
 extern volatile MQTTAsync_token deliveredtoken;
 extern MQTTAsync client;
 extern uint8_t mqtt_connected;
+extern mqtt_conf_t mqtt_config;
 
 void mqtt_connlost(void *context, char *cause) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
@@ -39,28 +41,8 @@ void mqtt_onConnectFailure(void *context, MQTTAsync_failureData *response) {
 }
 
 void mqtt_onConnect(void *context, MQTTAsync_successData *response) {
-  int rc;
-  MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
-  MQTTAsync_message pubmsg = MQTTAsync_message_initializer;
   printf("Successful connection to MQTT broker!\n");
   mqtt_connected = 1;
-  opts.onSuccess = mqtt_onSend;
-  opts.context = client;
-  pubmsg.payload = MQTT_PAYLOAD;
-  pubmsg.payloadlen = strlen(MQTT_PAYLOAD);
-  pubmsg.qos = MQTT_QOS;
-  pubmsg.retained = 0;
-  deliveredtoken = 0;
-  rc = MQTTAsync_sendMessage(client, MQTT_TOPIC, &pubmsg, &opts);
-  if (rc == MQTTASYNC_SUCCESS) {
-    printf("mqtt_pubMsg: Message published OK!\n");
-  } else if (rc == MQTTASYNC_DISCONNECTED) {
-    printf("mqtt_pubMsg: Failed to start sendMessage - The client is "
-           "disconnected. (retcode: %d)\n",
-           rc);
-    exit(EXIT_FAILURE);
-  } else {
-  }
 }
 
 void mqtt_pubMsg(char *message, uint16_t message_len) {
@@ -75,7 +57,7 @@ void mqtt_pubMsg(char *message, uint16_t message_len) {
   pubmsg.qos = MQTT_QOS;
   pubmsg.retained = 0;
   deliveredtoken = 0;
-  rc = MQTTAsync_sendMessage(client, MQTT_TOPIC, &pubmsg, &opts);
+  rc = MQTTAsync_sendMessage(client, mqtt_config.topic, &pubmsg, &opts);
   if (rc == MQTTASYNC_SUCCESS) {
     printf("mqtt_pubMsg: Message published OK!\n");
   } else if (rc == MQTTASYNC_DISCONNECTED) {

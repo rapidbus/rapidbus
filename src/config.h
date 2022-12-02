@@ -8,6 +8,14 @@
 
 enum ias { f32, s32, u32, s16 };
 
+typedef struct mqtt_conf_t {
+  char addr[256];
+  char client_id[256];
+  char topic[1024];
+  uint8_t qos;
+  uint32_t timeout;
+} mqtt_conf_t;
+
 typedef struct task_t {
   uint8_t state;
   uint64_t last_run;
@@ -22,6 +30,6 @@ typedef struct task_t {
   uint8_t interpret_as;
 } task_t;
 
-void read_config(task_t *tasks);
+void read_config(mqtt_conf_t *mqtt_config, task_t *tasks);
 
 #endif

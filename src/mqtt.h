@@ -8,12 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MQTT_ADDRESS "tcp://broker.hivemq.com:1883"
-#define MQTT_CLIENTID "hackcli"
-#define MQTT_TOPIC "HackCli"
 #define MQTT_PAYLOAD "{\"ident\": \"r1\",\"value\": %f, \"ts\": %li}"
 #define MQTT_QOS 0
-#define MQTT_TIMEOUT 10000L
 
 void mqtt_connlost(void *context, char *cause);
 void mqtt_onDisconnect(void *context, MQTTAsync_successData *response);

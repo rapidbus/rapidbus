@@ -34,15 +34,15 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks) {
           break;
         case 1:
           printf("Sanitizing address: %s (%u)\n", ch, pos);
-          strcpy(mqtt_config->addr, ch);
+          strncpy(mqtt_config->addr, ch, sizeof(mqtt_config->addr));
           break;
         case 2:
           printf("Sanitizing client ID: %s (%u)\n", ch, pos);
-          strcpy(mqtt_config->client_id, ch);
+          strncpy(mqtt_config->client_id, ch, sizeof(mqtt_config->client_id));
           break;
         case 3:
           printf("Sanitizing MQTT topic: %s (%u)\n", ch, pos);
-          strcpy(mqtt_config->topic, ch);
+          strncpy(mqtt_config->topic, ch, sizeof(mqtt_config->topic));
           break;
         default:
           printf("We should never get here when parsing config file - probably "

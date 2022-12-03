@@ -11,7 +11,7 @@ enum ias { f32, s32, u32, s16 };
 typedef struct mqtt_conf_t {
   char addr[256];
   char client_id[256];
-  char topic[1024];
+  char topic[512];
   uint8_t qos;
   uint32_t timeout;
 } mqtt_conf_t;

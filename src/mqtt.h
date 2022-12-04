@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MQTT_PAYLOAD "{\"ident\": \"r1\",\"value\": %f, \"ts\": %llu}"
+#define MQTT_PAYLOAD "{\"ident\": \"r1\",\"value\": %f, \"ts\": %lu}"
 #define MQTT_QOS 0
 
 void mqtt_connlost(void *context, char *cause);

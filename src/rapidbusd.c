@@ -56,8 +56,12 @@ void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
 
 int open_port(void) {
   int fd; /* File descriptor for the port */
-  char serial_port[] = "/dev/ttyUSB2";
-  // char serial_port[] = "/dev/tty.usbserial-DM0105NG";
+  char serial_port[256];
+
+  // serial port will always be the same for all vnets!!!
+  // this is because its difficult to manage access
+  // to shared medium such as serial port
+  strncpy(serial_port, vnets[0].port, sizeof(serial_port) - 1);
 
   printf("About to open serial port %s\n", serial_port);
   fd = open(serial_port, O_RDWR | O_NOCTTY | O_NDELAY);
@@ -188,7 +192,7 @@ void timer_callback(int sig) {
              "%li\n",
              a, tasks[a].period_ms, tasks[a].last_run);
       if (tasks[a].period_ms <= ms - tasks[a].last_run) {
-        printf("Decided to execute task ID %d query_name: %s @%llu period: %i\n", a,
+        printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
                tasks[a].query_name, ms, tasks[a].period_ms);
         value = get_modbus_data(modbus_request, sizeof(modbus_request), ret_modbus_data);
         sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
@@ -210,7 +214,7 @@ int main() {
 
   printf("Initial struct def values for virtual networks (max networks: %i)\n", MAX_VNETS_COUNT);
   for (uint16_t a = 0; a < MAX_VNETS_COUNT; a++) {
-    vnet[a].state = 0;
+    vnets[a].state = 0;
   }
 
   printf("Initialize configuration\n");

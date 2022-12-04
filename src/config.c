@@ -31,7 +31,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
       while (ch != NULL) {
         switch (pos) {
         case 0:
-          printf("Query line mark: %s (pos %u)\n", ch, pos);
+          printf("MQTTT config line mark: %s (pos %u)\n", ch, pos);
           break;
         case 1:
           printf("Sanitizing address: %s (%u)\n", ch, pos);
@@ -115,8 +115,26 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
           if (strcmp("f32", ch) == 0) {
             printf("Interpret as 32 bit float");
             tasks[qi].interpret_as = f32;
+          } else if (strcmp("u32", ch) == 0) {
+            printf("Interpret as 32 bit unsigned int");
+            tasks[qi].interpret_as = u32;
+          } else if (strcmp("u16", ch) == 0) {
+            printf("Interpret as 16 bit unsigned int");
+            tasks[qi].interpret_as = u16;
+          } else if (strcmp("u8", ch) == 0) {
+            printf("Interpret as 8 bit unsigned int");
+            tasks[qi].interpret_as = u8;
+          } else if (strcmp("s32", ch) == 0) {
+            printf("Interpret as 32 bit signed int");
+            tasks[qi].interpret_as = s32;
+          } else if (strcmp("s16", ch) == 0) {
+            printf("Interpret as 16 bit signed int");
+            tasks[qi].interpret_as = s16;
+          } else if (strcmp("s8", ch) == 0) {
+            printf("Interpret as 8 bit signed int");
+            tasks[qi].interpret_as = s8;
           } else {
-            printf("Unknown type to interpret: %s", ch);
+            printf("Error in config file: Unknown type to interpret: %s\n", ch);
             exit(12);
           }
           break;
@@ -186,7 +204,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         ch = strtok(NULL, ",");
         pos++;
       }
-      if (pos != 6) {
+      if (pos != 5) {
         printf("Problem parsing config line! Needs 5 configuration positions for "
                "virtual network definition, but found %i\n",
                pos);
@@ -195,26 +213,39 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
       vnets[vi].state = 1; // enable this task index
       vi++;
     } else {
-      continue;
-    }
-    printf("MQTT config loaded from config file:\n");
-    printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr,
-           mqtt_config->client_id, mqtt_config->topic);
-    printf("Virtual networks loaded from config file:\n");
-    for (uint8_t i = 0; i < vi; i++) {
-      printf("  Network name: %s\n  Network port: %s\n Net baudrate: %i\n  "
-             "Serial config: %s\n",
-             vnets[i].name, vnets[i].port, vnets[i].baudrate, vnets[i].serial_config);
-    }
-    printf("Tasks loaded from config file:\n");
-    for (uint8_t a = 0; a < qi; a++) {
-      printf("=>Task ID: %u\n  MODBUS ID: %u\n  MODBUS function: %u\n  Start "
-             "register:%u\n  "
-             "Number of words to read: %u\n  Query period [ms]: %i\n  "
-             "Interpret as: %u\n",
-             a, tasks[a].modbus_id, tasks[a].modbus_function, tasks[a].start_register,
-             tasks[a].wcount, tasks[a].period_ms, tasks[a].interpret_as);
+      if (line[0] != '#') {
+        printf("Unknown line in config file: %s\n", line);
+        exit(9);
+      }
     }
   }
   fclose(fp);
+  printf("##################### START Config show\n");
+  printf("MQTT config loaded from config file:\n");
+  printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr,
+         mqtt_config->client_id, mqtt_config->topic);
+  if (vi <= 0) {
+    printf("No serial virtual networks defined in config file! We need at least one!\n");
+    exit(13);
+  }
+  printf("Virtual networks loaded from config file:\n");
+  for (uint8_t i = 0; i < vi; i++) {
+    printf("  Network name: %s\n  Network port: %s\n  Net baudrate: %i\n  "
+           "Serial config: %s\n",
+           vnets[i].name, vnets[i].port, vnets[i].baudrate, vnets[i].serial_config);
+  }
+  if (qi <= 0) {
+    printf("No sensor queries defined in config file! We need at least one!\n");
+    exit(14);
+  }
+  printf("Tasks loaded from config file:\n");
+  for (uint8_t a = 0; a < qi; a++) {
+    printf("=>Task ID: %u\n  MODBUS ID: %u\n  MODBUS function: %u\n  Start "
+           "register: %u\n  "
+           "Number of words to read: %u\n  Query period [ms]: %i\n  "
+           "Interpret as: %u\n",
+           a, tasks[a].modbus_id, tasks[a].modbus_function, tasks[a].start_register,
+           tasks[a].wcount, tasks[a].period_ms, tasks[a].interpret_as);
+  }
+  printf("##################### END Config show\n");
 }

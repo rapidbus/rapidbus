@@ -14,7 +14,10 @@
 #include <unistd.h>  /* UNIX standard function definitions */
 
 #define MAX_TASKS_COUNT 256
+#define MAX_VNETS_COUNT 16
+
 task_t tasks[MAX_TASKS_COUNT];
+vnet_t vnets[MAX_VNETS_COUNT];
 
 volatile MQTTAsync_token deliveredtoken;
 int finished = 0;
@@ -138,7 +141,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   uint8_t bytes_avail;
   ioctl(ser, FIONREAD, &bytes_avail);
   if (!bytes_avail) {
-    printf("PROBLEM: Sensor did not respond within %ims. Skipping read.\n",
+    printf("PROBLEM: Sensor did not respond within %ums. Skipping read.\n",
            wait_for_response_for_ms);
     return -1;
   }
@@ -186,7 +189,7 @@ void timer_callback(int sig) {
              "%li\n",
              a, tasks[a].period_ms, tasks[a].last_run);
       if (tasks[a].period_ms <= ms - tasks[a].last_run) {
-        printf("Decided to execute task ID %d query_name: %s @%li period: %i\n",
+        printf("Decided to execute task ID %d query_name: %s @%llu period: %i\n",
                a, tasks[a].query_name, ms, tasks[a].period_ms);
         value = get_modbus_data(modbus_request, sizeof(modbus_request),
                                 ret_modbus_data);
@@ -208,8 +211,14 @@ int main() {
     tasks[a].state = 0;
   }
 
+  printf("Initial struct def values for virtual networks (max networks: %i)\n",
+         MAX_VNETS_COUNT);
+  for (uint16_t a = 0; a < MAX_VNETS_COUNT; a++) {
+    vnet[a].state = 0;
+  }
+
   printf("Initialize configuration\n");
-  read_config(&mqtt_config, tasks);
+  read_config(&mqtt_config, tasks, vnets);
 
   mqtt_connect_to(&mqtt_config);
 

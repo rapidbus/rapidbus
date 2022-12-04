@@ -40,8 +40,8 @@ void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   // MQTTAsync_token token;
   int rc;
-  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id,
-                   MQTTCLIENT_PERSISTENCE_NONE, NULL);
+  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id, MQTTCLIENT_PERSISTENCE_NONE,
+                   NULL);
   MQTTAsync_setCallbacks(client, NULL, mqtt_connlost, NULL, NULL);
   conn_opts.keepAliveInterval = 20;
   conn_opts.cleansession = 1;
@@ -153,8 +153,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   printf("\n");
 
   // check MODBUS CRC
-  if (!checkModbusCRC(rb, readbytes - 2, rb[readbytes - 2],
-                      rb[readbytes - 1])) {
+  if (!checkModbusCRC(rb, readbytes - 2, rb[readbytes - 2], rb[readbytes - 1])) {
     printf("CRC not correct - skipping parsing the modbus packet.\n");
     return -1;
   };
@@ -189,10 +188,9 @@ void timer_callback(int sig) {
              "%li\n",
              a, tasks[a].period_ms, tasks[a].last_run);
       if (tasks[a].period_ms <= ms - tasks[a].last_run) {
-        printf("Decided to execute task ID %d query_name: %s @%llu period: %i\n",
-               a, tasks[a].query_name, ms, tasks[a].period_ms);
-        value = get_modbus_data(modbus_request, sizeof(modbus_request),
-                                ret_modbus_data);
+        printf("Decided to execute task ID %d query_name: %s @%llu period: %i\n", a,
+               tasks[a].query_name, ms, tasks[a].period_ms);
+        value = get_modbus_data(modbus_request, sizeof(modbus_request), ret_modbus_data);
         sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
         printf("%s\n", msg);
         mqtt_pubMsg(msg, strlen(msg));
@@ -205,14 +203,12 @@ void timer_callback(int sig) {
 
 int main() {
 
-  printf("Initial struct def values for config (max tasks: %i)\n",
-         MAX_TASKS_COUNT);
+  printf("Initial struct def values for config (max tasks: %i)\n", MAX_TASKS_COUNT);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
     tasks[a].state = 0;
   }
 
-  printf("Initial struct def values for virtual networks (max networks: %i)\n",
-         MAX_VNETS_COUNT);
+  printf("Initial struct def values for virtual networks (max networks: %i)\n", MAX_VNETS_COUNT);
   for (uint16_t a = 0; a < MAX_VNETS_COUNT; a++) {
     vnet[a].state = 0;
   }
@@ -233,11 +229,19 @@ int main() {
   printf("Port opened\n");
 
   while (1) {
-    if (!mqtt_connected) {
+    while (!mqtt_connected) {
+      stop_timer(&timerid);
       printf("Disconnected from MQTT broker! Try to re-initialize "
              "connection...\n");
       mqtt_connect_to(&mqtt_config);
-      sleep(10);
+      sleep(5);
+      if (mqtt_connected) {
+        printf("Reconnected to MQTT broker! Restarting timer...\n");
+        start_timer(&timerid);
+      } else {
+        printf("Reconnection to MQTT broker failed! Try again in 10s...\n");
+        sleep(10);
+      }
     }
   }
 

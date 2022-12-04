@@ -56,10 +56,9 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         pos++;
       }
       if (pos != 4) {
-        printf(
-            "Problem parsing config line! Needs 4 configuration positions for "
-            "query definition, but found %i\n",
-            pos);
+        printf("Problem parsing config line! Needs 4 configuration positions for "
+               "query definition, but found %i\n",
+               pos);
         exit(10);
       }
     } else if (line[0] == 'q') {
@@ -136,10 +135,9 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         pos++;
       }
       if (pos != 11) {
-        printf(
-            "Problem parsing config line! Needs 10 configuration positions for "
-            "query definition, but found %i\n",
-            pos);
+        printf("Problem parsing config line! Needs 10 configuration positions for "
+               "query definition, but found %i\n",
+               pos);
         exit(10);
       }
       tasks[qi].state = 1; // enable this task index
@@ -189,10 +187,9 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         pos++;
       }
       if (pos != 6) {
-        printf(
-            "Problem parsing config line! Needs 5 configuration positions for "
-            "virtual network definition, but found %i\n",
-            pos);
+        printf("Problem parsing config line! Needs 5 configuration positions for "
+               "virtual network definition, but found %i\n",
+               pos);
         exit(10);
       }
       vnets[vi].state = 1; // enable this task index
@@ -201,12 +198,13 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
       continue;
     }
     printf("MQTT config loaded from config file:\n");
-    printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n",
-           mqtt_config->addr, mqtt_config->client_id, mqtt_config->topic);
+    printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr,
+           mqtt_config->client_id, mqtt_config->topic);
     printf("Virtual networks loaded from config file:\n");
     for (uint8_t i = 0; i < vi; i++) {
-      printf("  Network name: %s\n  Network port: %s\n Net baudrate: %i\n  Serial config: %s\n", vnets[i].name, vnets[i].port,
-             vnets[i].baudrate, vnets[i].serial_config);
+      printf("  Network name: %s\n  Network port: %s\n Net baudrate: %i\n  "
+             "Serial config: %s\n",
+             vnets[i].name, vnets[i].port, vnets[i].baudrate, vnets[i].serial_config);
     }
     printf("Tasks loaded from config file:\n");
     for (uint8_t a = 0; a < qi; a++) {
@@ -214,9 +212,8 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
              "register:%u\n  "
              "Number of words to read: %u\n  Query period [ms]: %i\n  "
              "Interpret as: %u\n",
-             a, tasks[a].modbus_id, tasks[a].modbus_function,
-             tasks[a].start_register, tasks[a].wcount, tasks[a].period_ms,
-             tasks[a].interpret_as);
+             a, tasks[a].modbus_id, tasks[a].modbus_function, tasks[a].start_register,
+             tasks[a].wcount, tasks[a].period_ms, tasks[a].interpret_as);
     }
   }
   fclose(fp);

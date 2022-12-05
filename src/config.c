@@ -18,7 +18,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
   // getting list of queries from config file
   while (fgets(line, 256, fp) != NULL) {
     if (line[0] == 'm') {
-      for (uint16_t a = 0; a < strlen(line); a++) {
+      for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
           printf("Found strange character on position %u - ending query line "
                  "definition on this position!\n",
@@ -63,7 +63,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         exit(10);
       }
     } else if (line[0] == 'q') {
-      for (uint16_t a = 0; a < strlen(line); a++) {
+      for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
           printf("Found strange character on position %u - ending query line "
                  "definition on this position!\n",
@@ -163,7 +163,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
       qi++;
     } else if (line[0] == 'v') {
       // vnet definition line in config file
-      for (uint16_t a = 0; a < strlen(line); a++) {
+      for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
           printf("Found strange character on position %u - ending vnet line "
                  "definition on this position!\n",

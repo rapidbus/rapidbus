@@ -1,10 +1,12 @@
 #include "config.h"
+#include "errors.h"
 #include "modbus.h"
 #include "mqtt.h"
 #include "timers.h"
 #include <bsd/string.h>
-#include <errno.h>  /* Error number definitions */
-#include <fcntl.h>  /* File control definitions */
+#include <errno.h> /* Error number definitions */
+#include <fcntl.h> /* File control definitions */
+#include <getopt.h>
 #include <stdint.h> /* types definition */
 #include <stdio.h>  /* Standard input/output definitions */
 #include <stdlib.h> /* Standard input/output definitions */
@@ -50,7 +52,7 @@ void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
   conn_opts.context = client;
   if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
     printf("Failed to start connect, return code %d\n", rc);
-    exit(EXIT_FAILURE);
+    exit(ERROR_MQTT_CONNECT);
   }
 }
 
@@ -68,7 +70,7 @@ int open_port(void) {
   if (fd == -1) {
     printf("Failed opening serial port: %s\n", serial_port);
     perror("");
-    exit(1);
+    exit(ERROR_OPEN_SERIAL_PORT);
   }
 
   printf("Setting up serial port\n");
@@ -80,7 +82,7 @@ int open_port(void) {
 
   if (fcntl(fd, F_SETFL, FNDELAY) == -1) {
     printf("Error setting up serial interface. Error number: %i\n", errno);
-    exit(2);
+    exit(ERROR_SETUP_SERIAL_PORT);
   }
 
   struct termios options;
@@ -105,7 +107,7 @@ int open_port(void) {
     printf("Unknow settings for serial interface for network %s - dont know what \"%s\" means. Fix "
            "in config file.\n",
            vnets[0].name, vnets[0].serial_config);
-    exit(100);
+    exit(ERROR_CONFIG_FILE);
   }
 
   // Set up timeouts: Calls to read() will return as soon as there is
@@ -135,7 +137,7 @@ int open_port(void) {
             "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
             "%s in config file!.\n",
             vnets[0].baudrate, vnets[0].name);
-    exit(22);
+    exit(ERROR_BAUD_NOT_SUPPORTED);
   }
   cfsetispeed(&options, cfgetospeed(&options));
 
@@ -143,7 +145,7 @@ int open_port(void) {
   if (result) {
     perror("tcsetattr failed");
     close(fd);
-    exit(99);
+    exit(ERROR_TCSETATTR_FAILED);
   }
   printf("Done setting up serial interface.\n");
 
@@ -162,7 +164,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   int result = tcflush(ser, TCIOFLUSH);
   if (result) {
     perror("PROBLEM!! tcflush failed - looks like problem with serial subsystem on OS!");
-    exit(122);
+    exit(ERROR_TCFLUSH_FAILED);
   }
   int8_t n = write(ser, modbus_request, r_count);
   if (n != r_count) {
@@ -236,7 +238,23 @@ void timer_callback(int sig) {
   start_timer(&timerid);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+  int opt;
+  char config_file[256];
+
+  strlcpy(config_file, "/etc/rapidbusd.conf", sizeof(config_file));
+
+  while ((opt = getopt(argc, argv, "c:")) != -1)
+    switch (opt) {
+    case 'c':
+      printf("Option -c (config file path) was provided with a value of \"%s\"\n", optarg);
+      strlcpy(config_file, optarg, sizeof(config_file));
+      break;
+    default:
+      fprintf(stderr, "Usage: %s [-c config_file]\n", argv[0]);
+      exit(ERROR_USAGE);
+    }
 
   printf("Initial struct def values for config (max tasks: %i)\n", MAX_TASKS_COUNT);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -249,7 +267,7 @@ int main() {
   }
 
   printf("Initialize configuration\n");
-  read_config(&mqtt_config, tasks, vnets);
+  read_config(config_file, &mqtt_config, tasks, vnets);
 
   mqtt_connect_to(&mqtt_config);
 

@@ -1,7 +1,7 @@
 #include "config.h"
 #include <bsd/string.h>
 
-void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
+void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
   FILE *fp;
   char line[256];
   char *ch;
@@ -10,9 +10,10 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
   uint8_t vi = 0; // vnet stanza instance
 
   /* opening file for reading */
-  fp = fopen("rapidbusd.conf", "r");
+  fp = fopen(config_file, "r");
   if (fp == NULL) {
-    perror("Error opening config file");
+    fprintf(stderr, "Error opening config file: %s\n", config_file);
+    perror("");
     exit(9);
   }
   // getting list of queries from config file

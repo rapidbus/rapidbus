@@ -16,6 +16,19 @@ RapidBus is distributes as a single compiled binary file for Linux systems. It i
 
 The latest version of the binary can be downloaded from https://github.com/rapidbus/rapidbus/releases
 
+### Compilation from sources
+
+#### Debian 11 (bullseye)
+
+```
+apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 make
+git clone https://github.com/rapidbus/rapidbus.git
+cd rapidbus/src
+make all
+# test newly-compiled binary:
+./rapidbusd
+```
+
 ## Configuration
 
 Each RapidBus daemon instance is configured using one isolated configuration file _rapidbusd.conf_ by default (please mind the "d" at the end of "rapidbusd" - as in daemon).

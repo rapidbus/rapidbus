@@ -19,3 +19,7 @@ run: all
 check:
 	cppcheck *.c *.h
 	clang-format -i *.c *.h
+
+install:
+	cp rapidbusd.conf.example /etc/rapidbusd.conf
+	cp rapidbusd /usr/local/bin

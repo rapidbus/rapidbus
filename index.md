@@ -1,10 +1,14 @@
-## Bridge to forward data from physical sensors to MQTT
+# Bridge to forward data from physical sensors to MQTT
 
 RapidBus is a bridge to collect data from MODBUS (RTU) enabled sensors and rapidly forward them to MQTT broker for further analysis.
 
 RapidBus is used in OT/IT environments where its necessary to bridge the physical sensors with IT infrastructure. RapidBus is usually configured to read data in high frequency from multiple sensors on one physical serial interface (RS-485 for example) using RTU MODBUS protocol and then forward this data interpreted to MQTT topic - further analyzed by tools such as Grafana, Red-Node or stored in databases such as InfluxDB.
 
 By running multiple instances of RapidBus daemon it is possible to manage multiple physical serial interfaces on one edge system in Industry 4.0 / IIOT architecture.
+
+## Support
+
+Official support is provided via GitHub issues on https://github.com/rapidbus/rapidbus/issues only for now. If you need commercial guarenteed support please ask via maco@blava.net or via GitHub issues.
 
 ## Configuration
 

@@ -24,8 +24,8 @@ jobs:
       run: |
         set -x
         set -e
-        apt-get update
-        apt-get -y install \
+        sudo apt-get update
+        sudo apt-get -y install \
           libbsd-dev \
           git \
           curl \

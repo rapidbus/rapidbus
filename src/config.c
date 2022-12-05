@@ -20,7 +20,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
     if (line[0] == 'm') {
       for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
-          printf("Found strange character on position %u - ending query line "
+          printf("Found strange character on position %lu - ending query line "
                  "definition on this position!\n",
                  a);
           line[a] = '\0';
@@ -65,7 +65,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
     } else if (line[0] == 'q') {
       for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
-          printf("Found strange character on position %u - ending query line "
+          printf("Found strange character on position %lu - ending query line "
                  "definition on this position!\n",
                  a);
           line[a] = '\0';
@@ -165,7 +165,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
       // vnet definition line in config file
       for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
-          printf("Found strange character on position %u - ending vnet line "
+          printf("Found strange character on position %lu - ending vnet line "
                  "definition on this position!\n",
                  a);
           line[a] = '\0';

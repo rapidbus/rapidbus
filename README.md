@@ -9,21 +9,9 @@
 
 RapidBus is a bridging application between Operational Technoologies and Information Technologies (OT/IT) connecting serial-enabled sensors to MQTT broker. Essentially forwarding metering data from serial interface over MODBUS RTU to MQTT broker.
 
-Its written in C and targeted to be used on Linux platforms on the edge of Industry 4.0 networks. For detailed documentation see here: https://www.rapidbus.org
+This program is written in C (clang / gnu99 (ISO C 1999 with GNU extensions)) and targeted to be used on Linux platforms on the edge of Industry 4.0 networks. For detailed documentation see here: https://www.rapidbus.org
 
 ## Preparing development environment
-
-If you are interested in code development read further.
-
-### Debian
-
-Debian pre-bullseye (Debian 11) not supported as they dont include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
-
-#### Debian 11
-
-```
-apt install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
-```
 
 ### Ubuntu
 

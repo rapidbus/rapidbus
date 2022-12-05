@@ -39,6 +39,7 @@ cat < /dev/pts/2
 
 ```
 yum install cppcheck rpm-build
+# install paho-c from EPEL?
 git clone https://github.com/eclipse/paho.mqtt.c.git
 cd org.eclipse.paho.mqtt.c.git
 make

@@ -1,12 +1,13 @@
-CC=gcc
-#CFLAGS=-L. -std=c99
+CC=clang-11
+CFLAGS=-std=gnu99 -O3 -Wall -Wextra -pedantic
+LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 
 .PHONY: clean check
 
 all: clean rapidbusd
 
-rapidbusd: rapidbusd
-	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c -Wall -lrt -lpaho-mqtt3a -lbsd
+rapidbusd:
+	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c $(LDFLAGS)
 
 clean:
 	rm -f rapidbusd rapidbusd.o

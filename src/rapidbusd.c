@@ -224,7 +224,7 @@ void timer_callback(int sig) {
                    "%li\n",
                    a, tasks[a].period_ms, tasks[a].last_run);
       */
-      if (tasks[a].period_ms <= ms - tasks[a].last_run) {
+      if ((uint64_t)tasks[a].period_ms <= ms - tasks[a].last_run) {
         printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
                tasks[a].query_name, ms, tasks[a].period_ms);
         if (tasks[a].interpret_as == f32) {

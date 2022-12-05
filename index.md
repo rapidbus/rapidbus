@@ -20,7 +20,7 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 
 #### Debian 11 (bullseye)
 
-Note: Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
+Note: Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
 
 ```
 apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 clang-tools-11 make

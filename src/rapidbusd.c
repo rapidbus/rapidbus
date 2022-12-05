@@ -161,8 +161,8 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   // flushing old data
   int result = tcflush(ser, TCIOFLUSH);
   if (result) {
-    perror("PROBLEM!! tcflush failed"); // just a warning, not a fatal error
-    return -1;
+    perror("PROBLEM!! tcflush failed - looks like problem with serial subsystem on OS!");
+    exit(122);
   }
   int8_t n = write(ser, modbus_request, r_count);
   if (n != r_count) {
@@ -217,9 +217,11 @@ void timer_callback(int sig) {
   stop_timer(&timerid);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
     if (tasks[a].state == 1) {
-      printf("Evaluating task ID %d for execution ... period_ms: %i last_run: "
-             "%li\n",
-             a, tasks[a].period_ms, tasks[a].last_run);
+      /*
+            printf("Evaluating task ID %d for execution ... period_ms: %i last_run: "
+                   "%li\n",
+                   a, tasks[a].period_ms, tasks[a].last_run);
+      */
       if (tasks[a].period_ms <= ms - tasks[a].last_run) {
         printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
                tasks[a].query_name, ms, tasks[a].period_ms);

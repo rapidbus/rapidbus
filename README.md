@@ -36,7 +36,11 @@ apt install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
 #### Ubuntu 22.04
 
 ```
-apt install clang-tools-11 libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
+apt install clang-tools-11 libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev socat
+# create virtual serial interface
+socat -d -d pty,raw,echo=0 pty,raw,echo=0
+# in another terminal
+cat < /dev/pts/2
 ```
 
 ### RHEL

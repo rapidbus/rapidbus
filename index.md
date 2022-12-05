@@ -1,10 +1,18 @@
-## Bridge to forward data from physical serial to MQTT
+## Bridge to forward data from physical sensors to MQTT
 
 RapidBus is a bridge to collect data from MODBUS (RTU) enabled sensors and rapidly forward them to MQTT broker for further analysis.
 
-RapidBus is used in OT/IT environments where its necessary to bridge the physical sensors with IT infrastructure. RapidBus is usually configured to read data in high frequency from multiple sensors on one physical serial (RS-485 for example) interface using RTU MODBUS protocol. Running multiple instances of RapidBus daemon its possible to manage multiple physical serial interface on one edge system in Industry 4.0 / IIOT architecture.
+RapidBus is used in OT/IT environments where its necessary to bridge the physical sensors with IT infrastructure. RapidBus is usually configured to read data in high frequency from multiple sensors on one physical serial interface (RS-485 for example) using RTU MODBUS protocol and then forward this data interpreted to MQTT topic - further analyzed by tools such as Grafana, Red-Node or stored in databases such as InfluxDB.
 
-## Configuration of serial bus interface
+By running multiple instances of RapidBus daemon it is possible to manage multiple physical serial interfaces on one edge system in Industry 4.0 / IIOT architecture.
+
+## Configuration
+
+Each RapidBus daemon instance is configured using one isolated configuration file _rapidbusd.conf_ by default (please mind the "d" at the end of "rapidbus").
+
+The default search path for the file is _/etc/rapidbusd.conf_ and can be changed with **-c** command-line options when starting **rapidbusd** daemon.  
+
+### Configuration of serial bus interface
 
 Physical serial interfaces are a shared physical medium, but can contain multiple sensors with multiple baud and serial settings (for example using RS-485 signalling), therefore in RapidBus one physical interface can contain several "networks".
 A network is a group of devices (sensors/nodes) sharing the same physical serial network settings - same serial interface, baud rate and serial settings (data bits, parity, stop bit).
@@ -29,7 +37,7 @@ Where in above example:
 
 Make sure that the user under which the rapidbusd will be running has permissions to access your desired serial port. In Debian 11 this means adding the user to the group "dialout".
 
-## Configuration of clients (sensors)
+### Configuration of clients (sensors)
 
 Each RapidBus instance (rapidbusd "for RapidBus daemon") is attached to _one_ serial interface to schedule and read data from devices physically attached to that interface. The configuration file defines which MODBUS registries to read and then forward reponses to MQTT broker. RapidBus does not support MODBUS over IP - this is by design.
 
@@ -68,7 +76,7 @@ This example will make two requests to sensor we have named "sensor1" and one qu
 
 Queryname1 and queryname2 is human-identifiable characteristic for this query which sill be used in MQTT published message.
 
-## MQTT configuration
+### MQTT configuration
 
 MQTT configuration is done in configuration file using one line in the following format:
 
@@ -83,7 +91,7 @@ m,tcp://broker.example.com:1883,rapidbus_client,pub_topic
 
 MQTT messages are always published with QOS=0 as RapidBus is intended mostly for fast-paced reads.
 
-### MQTT pub message format
+#### MQTT pub message format
 
 ```
 {

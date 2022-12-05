@@ -20,6 +20,22 @@ jobs:
         language: [ 'cpp' ]
 
     steps:
+    - name: Fetch Dependencies
+      run: |
+        set -x
+        set -e
+        apt-get update
+        apt-get -y install \
+          libbsd-dev \
+          git \
+          curl \
+          wget \
+          build-essential \
+          autoconf-archive \
+          clang-tools-11 \
+          libpaho-mqtt-dev \
+          libpaho-mqtt1.3
+            
     - name: Checkout repository
       uses: actions/checkout@v3
 

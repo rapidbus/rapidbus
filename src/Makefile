@@ -23,3 +23,7 @@ check:
 install:
 	cp rapidbusd.conf.example /etc/rapidbusd.conf
 	cp rapidbusd /usr/local/bin
+
+uninstall:
+	mv /etc/rapidbusd.conf /etc/rapidbusd.conf.old
+	rm -f /usr/local/bin/rapidbusd

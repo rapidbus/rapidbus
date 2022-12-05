@@ -21,7 +21,7 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 #### Debian 11 (bullseye)
 
 ```
-apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 make
+apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 clang-tools-11 make
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
 make all

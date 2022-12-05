@@ -1,4 +1,5 @@
 #include "config.h"
+#include <bsd/string.h>
 
 void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
   FILE *fp;

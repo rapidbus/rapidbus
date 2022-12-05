@@ -2,6 +2,7 @@
 #include "modbus.h"
 #include "mqtt.h"
 #include "timers.h"
+#include <bsd/string.h>
 #include <errno.h>  /* Error number definitions */
 #include <fcntl.h>  /* File control definitions */
 #include <stdint.h> /* types definition */
@@ -66,8 +67,8 @@ int open_port(void) {
   printf("About to open serial port %s\n", serial_port);
   fd = open(serial_port, O_RDWR | O_NOCTTY | O_NDELAY);
   if (fd == -1) {
-    printf("Serial port %s\n", serial_port);
-    perror("open_port: Unable to open serial port.");
+    printf("Failed opening serial port: %s\n", serial_port);
+    perror("");
     exit(1);
   }
 

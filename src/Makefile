@@ -6,7 +6,7 @@ CC=gcc
 all: clean rapidbusd
 
 rapidbusd: rapidbusd
-	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c -Wall -lrt -lpaho-mqtt3a
+	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c -Wall -lrt -lpaho-mqtt3a -lbsd
 
 clean:
 	rm -f rapidbusd rapidbusd.o

@@ -20,7 +20,7 @@ Debian pre-bullseye (Debian 11) not supported as they dont include package https
 #### Debian 11
 
 ```
-apt install libpaho-mqtt-dev libpaho-mqtt1.3
+apt install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
 ```
 
 ### Ubuntu
@@ -30,13 +30,13 @@ Ubuntu pre-impish (Ubuntu 21.10) not supported they dont include package https:/
 #### Ubuntu 21.10
 
 ```
-apt install libpaho-mqtt-dev libpaho-mqtt1.3
+apt install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
 ```
 
 #### Ubuntu 22.04
 
 ```
-apt install clang-tools-11 libpaho-mqtt-dev libpaho-mqtt1.3
+apt install clang-tools-11 libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev
 ```
 
 ### RHEL

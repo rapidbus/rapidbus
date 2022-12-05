@@ -114,25 +114,25 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         case 9:
           printf("Interpret returned data as: %s (%u)\n", ch, pos);
           if (strcmp("f32", ch) == 0) {
-            printf("Interpret as 32 bit float");
+            printf("Interpret as 32 bit float\n");
             tasks[qi].interpret_as = f32;
           } else if (strcmp("u32", ch) == 0) {
-            printf("Interpret as 32 bit unsigned int");
+            printf("Interpret as 32 bit unsigned int\n");
             tasks[qi].interpret_as = u32;
           } else if (strcmp("u16", ch) == 0) {
-            printf("Interpret as 16 bit unsigned int");
+            printf("Interpret as 16 bit unsigned int\n");
             tasks[qi].interpret_as = u16;
           } else if (strcmp("u8", ch) == 0) {
-            printf("Interpret as 8 bit unsigned int");
+            printf("Interpret as 8 bit unsigned int\n");
             tasks[qi].interpret_as = u8;
           } else if (strcmp("s32", ch) == 0) {
-            printf("Interpret as 32 bit signed int");
+            printf("Interpret as 32 bit signed int\n");
             tasks[qi].interpret_as = s32;
           } else if (strcmp("s16", ch) == 0) {
-            printf("Interpret as 16 bit signed int");
+            printf("Interpret as 16 bit signed int\n");
             tasks[qi].interpret_as = s16;
           } else if (strcmp("s8", ch) == 0) {
-            printf("Interpret as 8 bit signed int");
+            printf("Interpret as 8 bit signed int\n");
             tasks[qi].interpret_as = s8;
           } else {
             printf("Error in config file: Unknown type to interpret: %s\n", ch);

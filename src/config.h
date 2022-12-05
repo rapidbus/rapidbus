@@ -35,7 +35,7 @@ typedef struct vnet_t {
   uint8_t state;
   char name[256];
   char port[256];
-  uint16_t baudrate;
+  uint32_t baudrate;
   char serial_config[4];
 } vnet_t;
 

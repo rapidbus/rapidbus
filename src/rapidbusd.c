@@ -11,7 +11,6 @@
 #include <string.h> /* String function definitions */
 #include <sys/ioctl.h>
 #include <termios.h> /* POSIX terminal control definitions */
-#include <termios.h> /* for changing baud etc */
 #include <unistd.h>  /* UNIX standard function definitions */
 
 #define MAX_TASKS_COUNT 256
@@ -95,27 +94,56 @@ int open_port(void) {
   options.c_oflag &= ~(ONLCR | OCRNL | OPOST);
   options.c_lflag &= ~(ECHO | ECHONL | ECHOE | ICANON | ISIG | IEXTEN);
 
-  // set 8N1 transfer
-  /*
-   * Enable the receiver and set local mode...
-   */
-  options.c_cflag |= (CLOCAL | CREAD);
-  options.c_cflag &= ~(PARENB | CSTOPB | CSIZE);
-  options.c_cflag |= CS8;
+  options.c_cflag |= (CLOCAL | CREAD); // Ignore modem control lines; Enable receiver.
+  options.c_cflag &= ~CSIZE; // make sure the two bit values for the length of data is reset
+
+  if (strcmp("8N1", vnets[0].serial_config) == 0) {
+    options.c_cflag &= ~CSTOPB; // disable TWO stop bits (left with one)
+    options.c_cflag &= ~PARENB; // disable parity
+    options.c_cflag |= CS8;     // Set character size mask (8bits)
+  } else {
+    printf("Unknow settings for serial interface for network %s - dont know what \"%s\" means. Fix "
+           "in config file.\n",
+           vnets[0].name, vnets[0].serial_config);
+    exit(100);
+  }
 
   // Set up timeouts: Calls to read() will return as soon as there is
   // at least one byte available or when 100 ms has passed.
   // options.c_cc[VTIME] = 1;
   // options.c_cc[VMIN] = 0;
 
-  cfsetospeed(&options, B38400);
+  printf("Setting baud for virtual network %s to %u.\n", vnets[0].name, vnets[0].baudrate);
+  switch (vnets[0].baudrate) {
+  case 4800:
+    cfsetospeed(&options, B4800);
+    break;
+  case 9600:
+    cfsetospeed(&options, B9600);
+    break;
+  case 19200:
+    cfsetospeed(&options, B19200);
+    break;
+  case 38400:
+    cfsetospeed(&options, B38400);
+    break;
+  case 115200:
+    cfsetospeed(&options, B115200);
+    break;
+  default:
+    fprintf(stderr,
+            "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
+            "%s in config file!.\n",
+            vnets[0].baudrate, vnets[0].name);
+    exit(22);
+  }
   cfsetispeed(&options, cfgetospeed(&options));
 
   result = tcsetattr(fd, TCSANOW, &options);
   if (result) {
     perror("tcsetattr failed");
     close(fd);
-    return -1;
+    exit(99);
   }
   printf("Done setting up serial interface.\n");
 

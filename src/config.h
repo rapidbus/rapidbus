@@ -24,8 +24,8 @@ typedef struct task_t {
   char query_name[256];
   uint8_t modbus_id;
   uint8_t modbus_function;
-  uint8_t start_register;
-  uint8_t wcount;
+  uint16_t start_register;
+  uint16_t wcount;
   uint8_t offset;
   uint8_t interpret_as;
   int period_ms;

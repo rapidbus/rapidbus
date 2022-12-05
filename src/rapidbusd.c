@@ -204,15 +204,15 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
 
 void timer_callback(int sig) {
   char msg[1024];
-  float value;
+  float float_value;
   uint8_t ret_modbus_data[1024];
   uint64_t ms = ts_millis();
   uint8_t modbus_request[] = {tasks[0].modbus_id,
                               tasks[0].modbus_function,
-                              0x00,
-                              tasks[0].start_register,
-                              0x00,
-                              tasks[0].wcount,
+                              tasks[0].start_register >> 8,
+                              tasks[0].start_register & 0xFF,
+                              tasks[0].wcount >> 8,
+                              tasks[0].wcount & 0xFF,
                               0x14,
                               0x09};
 
@@ -227,8 +227,15 @@ void timer_callback(int sig) {
       if (tasks[a].period_ms <= ms - tasks[a].last_run) {
         printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
                tasks[a].query_name, ms, tasks[a].period_ms);
-        value = get_modbus_data(modbus_request, sizeof(modbus_request), ret_modbus_data);
-        sprintf(msg, MQTT_PAYLOAD, value, ts_millis());
+        if (tasks[a].interpret_as == f32) {
+          float_value = get_modbus_data(modbus_request, sizeof(modbus_request), ret_modbus_data);
+          sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
+                  ts_millis());
+        } else {
+          fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n",
+                  tasks[a].interpret_as, tasks[a].query_name);
+          continue;
+        }
         printf("%s\n", msg);
         mqtt_pubMsg(msg, strlen(msg));
         tasks[a].last_run = ms;

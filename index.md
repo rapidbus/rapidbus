@@ -10,11 +10,21 @@ By running multiple instances of RapidBus daemon it is possible to manage multip
 
 Official support is provided via GitHub issues on https://github.com/rapidbus/rapidbus/issues only for now. If you need commercial guarenteed support please ask via maco@blava.net or via GitHub issues.
 
+## Installation
+
+RapidBus is distributes as a single compiled binary file for Linux systems. It is not, and will be not, supported on other platforms, because it is very tightly coupled with serial drivers in Linux. This strong coupling enables the high performance of RapidBus and straightforward maintenance, development, testing and support.
+
+The latest version of the binary can be downloaded from https://github.com/rapidbus/rapidbus/releases
+
 ## Configuration
 
-Each RapidBus daemon instance is configured using one isolated configuration file _rapidbusd.conf_ by default (please mind the "d" at the end of "rapidbus").
+Each RapidBus daemon instance is configured using one isolated configuration file _rapidbusd.conf_ by default (please mind the "d" at the end of "rapidbusd" - as in daemon).
 
-The default search path for the file is _/etc/rapidbusd.conf_ and can be changed with **-c** command-line options when starting **rapidbusd** daemon.  
+The default search path for the file is _/etc/rapidbusd.conf_ and can be changed with **-c** command-line options when starting **rapidbusd** daemon. Such as the following:
+
+```
+rapidbusd -c /etc/rapidbus/rapidbusd.conf
+```
 
 ### Configuration of serial bus interface
 

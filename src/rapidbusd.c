@@ -61,7 +61,7 @@ int open_port(void) {
   // serial port will always be the same for all vnets!!!
   // this is because its difficult to manage access
   // to shared medium such as serial port
-  strncpy(serial_port, vnets[0].port, sizeof(serial_port) - 1);
+  strlcpy(serial_port, vnets[0].port, sizeof(serial_port));
 
   printf("About to open serial port %s\n", serial_port);
   fd = open(serial_port, O_RDWR | O_NOCTTY | O_NDELAY);

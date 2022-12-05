@@ -35,15 +35,15 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
           break;
         case 1:
           printf("Sanitizing address: %s (%u)\n", ch, pos);
-          strncpy(mqtt_config->addr, ch, sizeof(mqtt_config->addr) - 1);
+          strlcpy(mqtt_config->addr, ch, sizeof(mqtt_config->addr));
           break;
         case 2:
           printf("Sanitizing client ID: %s (%u)\n", ch, pos);
-          strncpy(mqtt_config->client_id, ch, sizeof(mqtt_config->client_id) - 1);
+          strlcpy(mqtt_config->client_id, ch, sizeof(mqtt_config->client_id));
           break;
         case 3:
           printf("Sanitizing MQTT topic: %s (%u)\n", ch, pos);
-          strncpy(mqtt_config->topic, ch, sizeof(mqtt_config->topic) - 1);
+          strlcpy(mqtt_config->topic, ch, sizeof(mqtt_config->topic));
           break;
         default:
           printf("We should never get here when parsing config file - probably "
@@ -80,15 +80,15 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
           break;
         case 1:
           printf("Sanitizing nodename: %s (pos %u)\n", ch, pos);
-          strncpy(tasks[qi].node_name, ch, sizeof(tasks[qi].node_name) - 1);
+          strlcpy(tasks[qi].node_name, ch, sizeof(tasks[qi].node_name));
           break;
         case 2:
           printf("Sanitizing network: %s (pos %u)\n", ch, pos);
-          strncpy(tasks[qi].vnet, ch, sizeof(tasks[qi].vnet) - 1);
+          strlcpy(tasks[qi].vnet, ch, sizeof(tasks[qi].vnet));
           break;
         case 3:
           printf("Sanitizing query name: %s (pos: %u)\n", ch, pos);
-          strncpy(tasks[qi].query_name, ch, sizeof(tasks[qi].query_name) - 1);
+          strlcpy(tasks[qi].query_name, ch, sizeof(tasks[qi].query_name));
           break;
         case 4:
           printf("Sanitizing MODBUS ID: %s (%u)\n", ch, pos);
@@ -180,12 +180,11 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
           break;
         case 1:
           printf("Sanitizing vnet name: %s (pos %u)\n", ch, pos);
-          strncpy(vnets[vi].name, ch, sizeof(vnets[vi].name) - 1);
+          strlcpy(vnets[vi].name, ch, sizeof(vnets[vi].name));
           break;
         case 2:
           printf("Sanitizing port path: %s (pos %u)\n", ch, pos);
-          strncpy(vnets[vi].port, ch, sizeof(vnets[vi].port) - 1);
-          vnets[vi].port[255] = '\0';
+          strlcpy(vnets[vi].port, ch, sizeof(vnets[vi].port));
           break;
         case 3:
           printf("Sanitizing baud: %s (pos: %u)\n", ch, pos);
@@ -193,8 +192,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
           break;
         case 4:
           printf("Sanitizing serial config: %s (%u)\n", ch, pos);
-          strncpy(vnets[vi].serial_config, ch, sizeof(vnets[vi].serial_config) - 1);
-          vnets[vi].serial_config[3] = '\0';
+          strlcpy(vnets[vi].serial_config, ch, sizeof(vnets[vi].serial_config));
           break;
         default:
           printf("We should never get here when parsing config file - probably "

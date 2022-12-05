@@ -23,12 +23,15 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 Note: Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
 
 ```
+sudo su -
 apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 clang-tools-11 make
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
 make all
 # test newly-compiled binary:
-./rapidbusd
+./rapidbusd -c ./rapidbusd.conf.example
+# install binary and template config file
+make install
 ```
 
 ## Configuration

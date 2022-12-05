@@ -185,6 +185,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         case 2:
           printf("Sanitizing port path: %s (pos %u)\n", ch, pos);
           strncpy(vnets[vi].port, ch, sizeof(vnets[vi].port) - 1);
+          vnets[vi].port[255] = '\0';
           break;
         case 3:
           printf("Sanitizing baud: %s (pos: %u)\n", ch, pos);
@@ -193,6 +194,7 @@ void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets) {
         case 4:
           printf("Sanitizing serial config: %s (%u)\n", ch, pos);
           strncpy(vnets[vi].serial_config, ch, sizeof(vnets[vi].serial_config) - 1);
+          vnets[vi].serial_config[3] = '\0';
           break;
         default:
           printf("We should never get here when parsing config file - probably "

@@ -36,7 +36,7 @@ typedef struct vnet_t {
   char name[256];
   char port[256];
   uint16_t baudrate;
-  char serial_config[256];
+  char serial_config[4];
 } vnet_t;
 
 void read_config(mqtt_conf_t *mqtt_config, task_t *tasks, vnet_t *vnets);

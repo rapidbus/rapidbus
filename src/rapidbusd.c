@@ -238,7 +238,7 @@ void timer_callback(__attribute__((unused)) int sig) {
         }
         msg[sizeof(msg) - 1] = '\0'; // just to be sure
         printf("%s\n", msg);
-        mqtt_pubMsg(msg, strlen(msg));
+        mqtt_pubMsg(msg, strnlen(msg, sizeof(msg)));
         tasks[a].last_run = ms;
       }
     }

@@ -3,6 +3,7 @@ CFLAGS=-std=gnu99 -O3 -Wall -Wextra -pedantic
 LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 
 .ONESHELL:
+.SHELLFLAGS += -e
 .PHONY: clean check
 
 all: clean rapidbusd

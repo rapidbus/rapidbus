@@ -202,7 +202,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   return b4_helper.f;
 }
 
-void timer_callback(int sig) {
+void timer_callback(__attribute__((unused)) int sig) {
   char msg[1024];
   float float_value;
   uint8_t ret_modbus_data[1024];

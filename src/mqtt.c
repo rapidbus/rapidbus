@@ -12,7 +12,7 @@ extern MQTTAsync client;
 extern uint8_t mqtt_connected;
 extern mqtt_conf_t mqtt_config;
 
-void mqtt_connlost(void *context, char *cause) {
+void mqtt_connlost(__attribute__((unused)) void *context, char *cause) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   int rc;
   printf("\nConnection lost\n");
@@ -26,21 +26,23 @@ void mqtt_connlost(void *context, char *cause) {
   }
 }
 
-void mqtt_onDisconnect(void *context, MQTTAsync_successData *response) {
+void mqtt_onDisconnect(__attribute__((unused)) void *context,
+                       __attribute__((unused)) MQTTAsync_successData *response) {
   printf("Successful disconnection\n");
   mqtt_connected = 0;
 }
 
-void mqtt_onSend(void *context, MQTTAsync_successData *response) {
+void mqtt_onSend(__attribute__((unused)) void *context, MQTTAsync_successData *response) {
   printf("Message with token value %d delivery confirmed\n", response->token);
 }
 
-void mqtt_onConnectFailure(void *context, MQTTAsync_failureData *response) {
+void mqtt_onConnectFailure(__attribute__((unused)) void *context, MQTTAsync_failureData *response) {
   printf("Connect failed, rc %d\n", response ? response->code : 0);
   mqtt_connected = 0;
 }
 
-void mqtt_onConnect(void *context, MQTTAsync_successData *response) {
+void mqtt_onConnect(__attribute__((unused)) void *context,
+                    __attribute__((unused)) MQTTAsync_successData *response) {
   printf("Successful connection to MQTT broker!\n");
   mqtt_connected = 1;
 }

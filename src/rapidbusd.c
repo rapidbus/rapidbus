@@ -152,7 +152,7 @@ int open_port(void) {
   return (fd);
 }
 
-float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
+float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   uint32_t wait_for_response_for_ms = 40;
 
   printf("Requesting data... ");
@@ -173,39 +173,45 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
   }
   nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
 
-  uint8_t bytes_avail;
+  uint16_t bytes_avail;
+  uint8_t rx_buffer[1024];
+
   ioctl(ser, FIONREAD, &bytes_avail);
   if (!bytes_avail) {
     printf("PROBLEM: Sensor did not respond within %ums. Skipping read.\n",
            wait_for_response_for_ms);
     return -1;
   }
-  int8_t readbytes = read(ser, rb, bytes_avail);
+
+  if (bytes_avail > sizeof(rx_buffer)) {
+    printf("PROBLEM: Sensor sent more than 1024 bytes. Skipping read.\n");
+    return -1;
+  }
+  int8_t readbytes = read(ser, rx_buffer, bytes_avail);
   printf("Received data  ...  ");
   for (uint8_t a = 0; a < readbytes; a++) {
-    printf("%X ", rb[a]);
+    printf("%X ", rx_buffer[a]);
   }
   printf("\n");
 
   // check MODBUS CRC
-  if (!checkModbusCRC(rb, readbytes - 2, rb[readbytes - 2], rb[readbytes - 1])) {
+  if (!checkModbusCRC(rx_buffer, readbytes - 2, rx_buffer[readbytes - 2],
+                      rx_buffer[readbytes - 1])) {
     printf("CRC not correct - skipping parsing the modbus packet.\n");
     return -1;
   };
 
   for (uint8_t a = 3; a < 3 + 4; a++) {
-    b4_helper.b[a - 3] = rb[a];
+    b4_helper.b[a - 3] = rx_buffer[a];
   }
   printf("Value: %f\n", b4_helper.f);
-  // memset(rb, 0, sizeof(rb));
-  // return readbytes;
+  // TODO: here, we should also fill up *rb to return data to caller
   return b4_helper.f;
 }
 
 void timer_callback(__attribute__((unused)) int sig) {
   char msg[1024];
   float float_value;
-  uint8_t ret_modbus_data[1024];
   uint64_t ms = ts_millis();
   uint8_t modbus_request[] = {tasks[0].modbus_id,
                               tasks[0].modbus_function,
@@ -228,7 +234,7 @@ void timer_callback(__attribute__((unused)) int sig) {
         printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
                tasks[a].query_name, ms, tasks[a].period_ms);
         if (tasks[a].interpret_as == f32) {
-          float_value = get_modbus_data(modbus_request, sizeof(modbus_request), ret_modbus_data);
+          float_value = get_modbus_data(modbus_request, sizeof(modbus_request));
           sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
                   ts_millis());
         } else {

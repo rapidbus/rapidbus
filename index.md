@@ -8,7 +8,7 @@ By running multiple instances of RapidBus daemon it is possible to manage multip
 
 ## Support
 
-Official support is provided via GitHub issues on https://github.com/rapidbus/rapidbus/issues only for now. If you need commercial guarenteed support please ask via maco@blava.net or via GitHub issues.
+Official support is provided via GitHub issues on https://github.com/rapidbus/rapidbus/issues only for now. If you need commercial guarenteed support please ask via info@moirelabs.com or via GitHub issues.
 
 ## Installation
 

@@ -1,5 +1,5 @@
 CC=clang-11
-CFLAGS=-std=gnu99 -O3 -Wall -Wextra -pedantic
+CFLAGS=-std=gnu99 -Wall -Wextra -pedantic
 LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 
 .ONESHELL:
@@ -16,7 +16,7 @@ clean:
 	echo "Clean done"
 
 run: all
-	./rapidbusd
+	./rapidbusd -c ./rapidbusd.conf.example
 
 check:
 	cppcheck *.c *.h

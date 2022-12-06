@@ -237,7 +237,7 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
            "Serial config: %s\n",
            vnets[i].name, vnets[i].port, vnets[i].baudrate, vnets[i].serial_config);
   }
-  if (qi <= 0) {
+  if (qi == 0) {
     printf("No sensor queries defined in config file! We need at least one!\n");
     exit(14);
   }

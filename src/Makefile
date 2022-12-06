@@ -2,12 +2,14 @@ CC=clang-11
 CFLAGS=-std=gnu99 -O3 -Wall -Wextra -pedantic
 LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 
+.ONESHELL:
 .PHONY: clean check
 
 all: clean rapidbusd
 
 rapidbusd:
 	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c $(LDFLAGS)
+	ls -al
 
 clean:
 	rm -f rapidbusd rapidbusd.o

@@ -24,7 +24,7 @@ Note: Compilation on Debian version before "bullseye" (Debian 11) is not support
 
 ```
 sudo su -
-apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-11 clang-tools-11 make
+apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-13 clang-tools-13 make
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
 make all

@@ -171,7 +171,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *rb) {
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");
   }
-  usleep(wait_for_response_for_ms * 1000);
+  nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
 
   uint8_t bytes_avail;
   ioctl(ser, FIONREAD, &bytes_avail);

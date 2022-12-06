@@ -1,6 +1,6 @@
 # Bridge to forward data from physical sensors to MQTT
 
-RapidBus is a bridge to collect data from MODBUS (RTU) enabled sensors and rapidly forward them to MQTT broker for further analysis.
+RapidBus is a bridge to collect data from MODBUS (RTU) enabled sensors or PLCs and rapidly forward them to MQTT broker for further analysis.
 
 RapidBus is used in OT/IT environments where its necessary to bridge the physical sensors with IT infrastructure. RapidBus is usually configured to read data in high frequency from multiple sensors on one physical serial interface (RS-485 for example) using RTU MODBUS protocol and then forward this data interpreted to MQTT topic - further analyzed by tools such as Grafana, Red-Node or stored in databases such as InfluxDB.
 

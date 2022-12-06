@@ -19,6 +19,7 @@ jobs:
           set -x
           set -e
           apt-get update
+          apt-get -y upgrade
           apt-get -y install \
             libbsd-dev \
             git \
@@ -27,6 +28,9 @@ jobs:
             build-essential \
             autoconf-archive \
             clang-tools-11 \
+            clang-11 \
+            clang-tools-11 \
+            make \
             libpaho-mqtt-dev \
             libpaho-mqtt1.3
       - name: Download Coverity Build Tool

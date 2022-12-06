@@ -53,7 +53,7 @@ jobs:
           export PATH=`pwd`/coverity_tool/bin:$PATH
           echo $PATH
           cd src
-          cov-build --dir cov-int make -j 3
+          cov-build --dir cov-int make -j 1
           cat cov-int/build-log.txt
 
       - name: Submit the result to Coverity Scan

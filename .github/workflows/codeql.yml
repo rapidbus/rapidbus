@@ -32,7 +32,7 @@ jobs:
           wget \
           build-essential \
           autoconf-archive \
-          clang-tools-11 \
+          clang-tools-13 \
           libpaho-mqtt-dev \
           libpaho-mqtt1.3
             

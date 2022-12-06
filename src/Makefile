@@ -1,5 +1,5 @@
-CC=clang-11
-CFLAGS=-std=gnu99 -Wall -Wextra -pedantic
+CC=clang-13
+CFLAGS=-std=gnu99 -O0 -Wall -Wextra -pedantic
 LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 
 .ONESHELL:

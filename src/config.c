@@ -17,7 +17,8 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
     exit(9);
   }
   // getting list of queries from config file
-  while (fgets(line, 256, fp) != NULL) {
+  while (fgets(line, sizeof(line), fp) != NULL) {
+    line[sizeof(line) - 1] = '\0'; // just to make sure
     if (line[0] == 'm') {
       for (size_t a = 0; a < strlen(line); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
@@ -226,13 +227,13 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
   printf("MQTT config loaded from config file:\n");
   printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr,
          mqtt_config->client_id, mqtt_config->topic);
-  if (vi <= 0) {
+  if (vi == 0) {
     printf("No serial virtual networks defined in config file! We need at least one!\n");
     exit(13);
   }
   printf("Virtual networks loaded from config file:\n");
   for (uint8_t i = 0; i < vi; i++) {
-    printf("  Network name: %s\n  Network port: %s\n  Net baudrate: %i\n  "
+    printf("  Network name: %s\n  Network port: %s\n  Net baudrate: %u\n  "
            "Serial config: %s\n",
            vnets[i].name, vnets[i].port, vnets[i].baudrate, vnets[i].serial_config);
   }

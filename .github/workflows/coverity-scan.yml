@@ -53,7 +53,7 @@ jobs:
           export PATH=`pwd`/coverity_tool/bin:$PATH
           echo $PATH
           cd src
-          cov-configure --template --compiler clang-11 --comptype clang
+          cov-configure --template --compiler clang-11 --comptype clangcc
           cov-build --dir cov-int make -j 1
           cat cov-int/build-log.txt
 

@@ -10,7 +10,6 @@ all: clean rapidbusd
 
 rapidbusd:
 	$(CC) $(CFLAGS) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c $(LDFLAGS)
-	ls -al
 
 clean:
 	rm -f rapidbusd rapidbusd.o

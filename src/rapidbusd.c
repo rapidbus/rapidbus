@@ -253,12 +253,16 @@ int main(int argc, char *argv[]) {
 
   strlcpy(config_file, "/etc/rapidbusd.conf", sizeof(config_file));
 
-  while ((opt = getopt(argc, argv, "c:")) != -1)
+  while ((opt = getopt(argc, argv, "c:h")) != -1)
     switch (opt) {
     case 'c':
       printf("Option -c (config file path) was provided with a value of \"%s\"\n", optarg);
       strlcpy(config_file, optarg, sizeof(config_file));
       break;
+    case 'h':
+      printf("RapidBus (from rapidbus.org) version: %s\n", RAPIDBUS_VERSION);
+      printf("Usage: %s [-c config_file]\n", argv[0]);
+      exit(EXIT_OK);
     default:
       fprintf(stderr, "Usage: %s [-c config_file]\n", argv[0]);
       exit(ERROR_USAGE);

@@ -1,5 +1,5 @@
 enum error_codes {
-  OK,
+  EXIT_OK,
   ERROR_USAGE,
   ERR_INVALID_STATE,
   ERROR_MQTT_CONNECT,

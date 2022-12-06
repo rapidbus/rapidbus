@@ -184,12 +184,12 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   }
 
   if (bytes_avail > sizeof(rx_buffer)) {
-    printf("PROBLEM: Sensor sent more than 1024 bytes. Skipping read.\n");
+    printf("PROBLEM: Sensor sent more than %lu bytes. Skipping read.\n", sizeof(rx_buffer));
     return -1;
   }
-  int8_t readbytes = read(ser, rx_buffer, bytes_avail);
+  int16_t readbytes = read(ser, rx_buffer, bytes_avail);
   printf("Received data  ...  ");
-  for (uint8_t a = 0; a < readbytes; a++) {
+  for (uint16_t a = 0; a < readbytes; a++) {
     printf("%X ", rx_buffer[a]);
   }
   printf("\n");

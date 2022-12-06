@@ -12,7 +12,7 @@ Official support is provided via GitHub issues on https://github.com/rapidbus/ra
 
 ## Installation
 
-RapidBus is distributes as a single compiled binary file for Linux systems. It is not, and will be not, supported on other platforms, because it is very tightly coupled with serial drivers in Linux. This strong coupling enables the high performance of RapidBus and straightforward maintenance, development, testing and support.
+RapidBus is distributed as a single compiled binary file for Linux systems. It is not, and will not be supported on other platforms, because it is very tightly coupled with serial drivers in Linux. This strong coupling enables the high performance of RapidBus and straightforward maintenance, development, testing and support.
 
 The latest version of the binary can be downloaded from https://github.com/rapidbus/rapidbus/releases
 

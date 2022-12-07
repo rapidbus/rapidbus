@@ -34,6 +34,22 @@ make all
 make install
 ```
 
+#### Docker / Podman
+
+To compile the software without the need to install additional packages on your system, but you have Docker or Podman installed:
+
+```
+git clone https://github.com/rapidbus/rapidbus.git
+cd rapidbus/src
+sudo docker build .
+# or if you use http/https proxy in your LAN:
+sudo docker build --build-arg http_proxy=http://10.20.30.40:8080 -t rapidbus/build .
+sudo docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/bash rapidbus/build -c "cd /opt/rapidbus/; make all"
+# test newly-compiled binary:
+./rapidbusd -c ./rapidbusd.conf.example
+# install binary and template config file cy copying
+```
+
 ## Configuration
 
 Each RapidBus daemon instance is configured using one isolated configuration file _rapidbusd.conf_ by default (please mind the "d" at the end of "rapidbusd" - as in daemon).

@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
-# Copyright (c) 2022 - 2022 Marcel Hecko <marcel.hecko@rapidbus.org>
-
 name: Coverity Scan
 on:
   workflow_dispatch:
@@ -21,7 +18,6 @@ jobs:
           apt-get update
           apt-get -y upgrade
           apt-get -y install \
-            libbsd-dev \
             git \
             curl \
             wget \

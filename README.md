@@ -19,13 +19,12 @@ cat < /dev/pts/2
 
 ### RHEL
 
-#### RHEL 7
+#### RHEL 9
+
+You might need to install EPEL repository to get all necessary packages.
 
 ```
-yum install cppcheck rpm-build
-# install paho-c from EPEL?
-git clone https://github.com/eclipse/paho.mqtt.c.git
-cd org.eclipse.paho.mqtt.c.git
+yum install paho-c cppcheck rpm-build clang libbsd-devel
 make
 sudo make install
 ```

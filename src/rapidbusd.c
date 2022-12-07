@@ -184,7 +184,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   }
 
   if (bytes_avail > sizeof(rx_buffer)) {
-    printf("PROBLEM: Sensor sent more than %lu bytes. Skipping read.\n", sizeof(rx_buffer));
+    printf("PROBLEM: Sensor sent more than %zu bytes. Skipping read.\n", sizeof(rx_buffer));
     return -1;
   }
   int16_t readbytes = read(ser, rx_buffer, bytes_avail);

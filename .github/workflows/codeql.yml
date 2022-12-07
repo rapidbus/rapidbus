@@ -26,7 +26,6 @@ jobs:
         set -e
         sudo apt-get update
         sudo apt-get -y install \
-          libbsd-dev \
           git \
           curl \
           wget \

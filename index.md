@@ -18,6 +18,8 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 
 ### Compilation from sources
 
+These commands will produce dynamically linked binaries.
+
 #### Debian 11 (bullseye)
 
 Note: Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev

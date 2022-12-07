@@ -188,8 +188,14 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
     return -1;
   }
   int16_t readbytes = read(ser, rx_buffer, bytes_avail);
+  
+  if (readbytes == -1) {
+    printf("PROBLEM: Reading from serial interface returned error. Skipping read.\n");
+    return -1;
+  }
+  
   printf("Received data  ...  ");
-  for (uint16_t a = 0; a < readbytes; a++) {
+  for (int16_t a = 0; a < readbytes; a++) {
     printf("%X ", rx_buffer[a]);
   }
   printf("\n");

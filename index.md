@@ -24,7 +24,7 @@ Note: Compilation on Debian version before "bullseye" (Debian 11) is not support
 
 ```
 sudo su -
-apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 libbsd-dev clang-13 clang-tools-13 make
+apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 clang-13 clang-tools-13 make
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
 make all
@@ -44,6 +44,7 @@ cd rapidbus/src
 docker build -t rapidbus/build .
 # or if you use http/https proxy in your LAN:
 docker build --build-arg http_proxy=http://10.20.30.11:8080 -t rapidbus/build .
+# run make all on the codebase
 docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/bash rapidbus/build -c "cd /opt/rapidbus/; make all"
 # test newly-compiled binary:
 ./rapidbusd -c ./rapidbusd.conf.example

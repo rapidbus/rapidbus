@@ -45,14 +45,23 @@ void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
   MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id, MQTTCLIENT_PERSISTENCE_NONE,
                    NULL);
   MQTTAsync_setCallbacks(client, NULL, mqtt_connlost, NULL, NULL);
+  conn_opts.struct_version = 6;
   conn_opts.keepAliveInterval = 20;
   conn_opts.cleansession = 1;
   conn_opts.onSuccess = mqtt_onConnect;
   conn_opts.onFailure = mqtt_onConnectFailure;
   conn_opts.context = client;
-  if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
-    printf("Failed to start connect, return code %d\n", rc);
-    exit(ERROR_MQTT_CONNECT);
+  rc = MQTTAsync_connect(client, &conn_opts);
+  if (rc == MQTTASYNC_SUCCESS) {
+    printf("MQTTASYNC_SUCCESS\n");
+  } else if (rc == MQTTASYNC_BAD_STRUCTURE) {
+    printf("MQTTASYNC_BAD_STRUCTURE (%d) returned, MQTTAsync_connectOptions debug:\n", rc);
+    printf("->struct_id      : %s\n", conn_opts.struct_id);
+    printf("->struct_version : %d\n", conn_opts.struct_version);
+    mqtt_connected = 0;
+  } else {
+    printf("Failed to start MQTTAsync_connect, return code: %d\n", rc);
+    mqtt_connected = 0;
   }
 }
 
@@ -171,7 +180,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");
   }
-  nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
+  nanosleep((const struct timespec[]) { { 0, wait_for_response_for_ms * 1000000L } }, NULL);
 
   uint16_t bytes_avail;
   uint8_t rx_buffer[1024];
@@ -188,12 +197,12 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
     return -1;
   }
   int16_t readbytes = read(ser, rx_buffer, bytes_avail);
-  
+
   if (readbytes == -1) {
     printf("PROBLEM: Reading from serial interface returned error. Skipping read.\n");
     return -1;
   }
-  
+
   printf("Received data  ...  ");
   for (int16_t a = 0; a < readbytes; a++) {
     printf("%X ", rx_buffer[a]);
@@ -219,14 +228,10 @@ void timer_callback(__attribute__((unused)) int sig) {
   char msg[1024];
   float float_value;
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = {tasks[0].modbus_id,
-                              tasks[0].modbus_function,
-                              tasks[0].start_register >> 8,
-                              tasks[0].start_register & 0xFF,
-                              tasks[0].wcount >> 8,
-                              tasks[0].wcount & 0xFF,
-                              0x14,
-                              0x09};
+  uint8_t modbus_request[] = { tasks[0].modbus_id,           tasks[0].modbus_function,
+                               tasks[0].start_register >> 8, tasks[0].start_register & 0xFF,
+                               tasks[0].wcount >> 8,         tasks[0].wcount & 0xFF,
+                               0x14,                         0x09 };
 
   stop_timer(&timerid);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -293,11 +298,15 @@ int main(int argc, char *argv[]) {
   printf("Initialize configuration\n");
   read_config(config_file, &mqtt_config, tasks, vnets);
 
-  mqtt_connect_to(&mqtt_config);
-
   while (!mqtt_connected) {
-    printf("Waiting for MQTT connection to broker...\n");
-    sleep(1);
+    mqtt_connect_to(&mqtt_config);
+    sleep(5);
+    if (mqtt_connected) {
+      printf("Connected to MQTT broker!\n");
+    } else {
+      printf("Connection to MQTT broker failed! Try again in 10s...\n");
+      sleep(10);
+    }
   }
 
   start_timer(&timerid);

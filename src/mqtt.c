@@ -18,10 +18,19 @@ void mqtt_connlost(__attribute__((unused)) void *context, char *cause) {
   printf("\nConnection lost\n");
   printf("     cause: %s\n", cause);
   printf("Reconnecting\n");
+  conn_opts.struct_version = 6;
   conn_opts.keepAliveInterval = 20;
   conn_opts.cleansession = 1;
-  if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
-    printf("Failed to start connect, return code %d\n", rc);
+  rc = MQTTAsync_connect(client, &conn_opts);
+  if (rc == MQTTASYNC_SUCCESS) {
+    printf("MQTTASYNC_SUCCESS\n");
+  } else if (rc == MQTTASYNC_BAD_STRUCTURE) {
+    printf("MQTTASYNC_BAD_STRUCTURE (%d) returned, debug:\n", rc);
+    printf("->struct_id      : %s\n", conn_opts.struct_id);
+    printf("->struct_version : %d\n", conn_opts.struct_version);
+    mqtt_connected = 0;
+  } else {
+    printf("Failed to start MQTTAsync_connect, return code: %d\n", rc);
     mqtt_connected = 0;
   }
 }

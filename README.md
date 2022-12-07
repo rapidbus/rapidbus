@@ -8,23 +8,11 @@ RapidBus is a bridging application between Operational Technologies and Informat
 
 This program is written in C (compiler: clang 13; standard: gnu99 (ISO C 1999 with GNU extensions)) and targeted to be used on Linux platforms on the edge of Industry 4.0 networks. For detailed documentation see here: https://www.rapidbus.org
 
-## Preparing development environment
+## Notes for testing
 
 ```
 # create virtual serial interface
 socat -d -d pty,raw,echo=0 pty,raw,echo=0
 # in another terminal
 cat < /dev/pts/2
-```
-
-### RHEL
-
-#### RHEL 9
-
-You might need to install EPEL repository to get all necessary packages.
-
-```
-yum install paho-c cppcheck rpm-build clang libbsd-devel
-make
-sudo make install
 ```

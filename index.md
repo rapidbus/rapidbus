@@ -41,13 +41,15 @@ To compile the software without the need to install additional packages on your 
 ```
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
-sudo docker build .
+sudo docker build -t rapidbus/build .
 # or if you use http/https proxy in your LAN:
-sudo docker build --build-arg http_proxy=http://10.20.30.40:8080 -t rapidbus/build .
+sudo docker build --build-arg http_proxy=http://10.20.30.11:8080 -t rapidbus/build .
 sudo docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/bash rapidbus/build -c "cd /opt/rapidbus/; make all"
 # test newly-compiled binary:
 ./rapidbusd -c ./rapidbusd.conf.example
-# install binary and template config file cy copying
+# install binary and template config file by copying
+cp rapidbusd.conf.example /etc/rapidbusd.conf
+cp rapidbusd /usr/local/bin
 ```
 
 ## Configuration

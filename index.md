@@ -159,3 +159,14 @@ MQTT messages are always published with QOS=0 as RapidBus is intended mostly for
 * *query* is set to query name as defined in configuration file
 * *value* is set to interpretet value of the MODBUS response
 * *ts* is UNIX timestamp of when the query to the sensor was made in milliseconds
+
+## Development
+
+### Functional testing
+
+```
+# create virtual serial interface
+socat -d -d pty,raw,echo=0 pty,raw,echo=0
+# in another terminal
+cat < /dev/pts/2
+```

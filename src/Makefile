@@ -1,7 +1,7 @@
 VERSION=-D RAPIDBUS_VERSION=\"0.0.1\"
 CC=clang-13
 CFLAGS=-std=gnu99 -O0 -Wall -Wextra -Wpedantic -pedantic -pedantic-errors
-LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
+LDFLAGS=-lrt -lpaho-mqtt3a
 
 .ONESHELL:
 .SHELLFLAGS += -e
@@ -10,7 +10,7 @@ LDFLAGS=-lrt -lpaho-mqtt3a -lbsd
 all: clean rapidbusd
 
 rapidbusd:
-	$(CC) $(CFLAGS) $(VERSION) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c $(LDFLAGS)
+	$(CC) $(CFLAGS) $(VERSION) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c strlcpy.c $(LDFLAGS)
 
 clean:
 	rm -f rapidbusd rapidbusd.o

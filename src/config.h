@@ -1,6 +1,7 @@
 #ifndef CONFIG_HEADER_FILE
 #define CONFIG_HEADER_FILE
 
+#include "string.h"
 #include <stdint.h> /* types definition */
 #include <stdio.h>
 #include <stdlib.h>

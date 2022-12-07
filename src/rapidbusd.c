@@ -3,7 +3,6 @@
 #include "modbus.h"
 #include "mqtt.h"
 #include "timers.h"
-#include <bsd/string.h>
 #include <errno.h> /* Error number definitions */
 #include <fcntl.h> /* File control definitions */
 #include <getopt.h>

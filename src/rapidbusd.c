@@ -180,7 +180,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");
   }
-  nanosleep((const struct timespec[]) { { 0, wait_for_response_for_ms * 1000000L } }, NULL);
+  nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
 
   uint16_t bytes_avail;
   uint8_t rx_buffer[1024];
@@ -228,10 +228,14 @@ void timer_callback(__attribute__((unused)) int sig) {
   char msg[1024];
   float float_value;
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = { tasks[0].modbus_id,           tasks[0].modbus_function,
-                               tasks[0].start_register >> 8, tasks[0].start_register & 0xFF,
-                               tasks[0].wcount >> 8,         tasks[0].wcount & 0xFF,
-                               0x14,                         0x09 };
+  uint8_t modbus_request[] = {tasks[0].modbus_id,
+                              tasks[0].modbus_function,
+                              tasks[0].start_register >> 8,
+                              tasks[0].start_register & 0xFF,
+                              tasks[0].wcount >> 8,
+                              tasks[0].wcount & 0xFF,
+                              0x14,
+                              0x09};
 
   stop_timer(&timerid);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {

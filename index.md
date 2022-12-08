@@ -18,36 +18,48 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 
 ### Compilation from sources
 
-These commands will produce dynamically linked binaries.
+Building is done using docker command - please install docker before running the build scripts. RapidBus DOES NOT RUN IN DOCKER BY DEFAULT, its merely using docker to build the binary so you dont have to install dependencies and build enviromnet on your system.
 
-#### Debian 11 (bullseye)
+#### Building for Debian 11 (bullseye)
 
-Note: Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
+Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
+
+Compilation is using PAHO MQTT C libraries directly from Debian repository and statically linking them.
 
 ```
-sudo su -
-apt-get install libpaho-mqtt-dev libpaho-mqtt1.3 clang-13 clang-tools-13 make
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
-make all
+build-debian11.sh
 # test newly-compiled binary:
 ./rapidbusd -c ./rapidbusd.conf.example
-# install binary and template config file
-make install
+# install binary and template config file by copying
+cp rapidbusd.conf.example /etc/rapidbusd.conf
+cp rapidbusd /usr/local/bin
 ```
 
-#### Docker / Podman
+#### Building for RHEL 8
 
-To compile the software without the need to install additional packages on your system, but you have Docker or Podman installed:
+Compilation is using PAHO MQTT C libraries from https://github.com/eclipse/paho.mqtt.c repository and statically linking them.
 
 ```
 git clone https://github.com/rapidbus/rapidbus.git
 cd rapidbus/src
-docker build -t rapidbus/build .
-# or if you use http/https proxy in your LAN:
-docker build --build-arg http_proxy=http://10.20.30.11:8080 -t rapidbus/build .
-# run make all on the codebase
-docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/bash rapidbus/build -c "cd /opt/rapidbus/; make all"
+./build-rhel8.sh
+# test newly-compiled binary:
+./rapidbusd -c ./rapidbusd.conf.example
+# install binary and template config file by copying
+cp rapidbusd.conf.example /etc/rapidbusd.conf
+cp rapidbusd /usr/local/bin
+```
+
+#### Building for RHEL 9
+
+Compilation is using PAHO MQTT C libraries from https://github.com/eclipse/paho.mqtt.c repository and statically linking them.
+
+```
+git clone https://github.com/rapidbus/rapidbus.git
+cd rapidbus/src
+./build-rhel9.sh
 # test newly-compiled binary:
 ./rapidbusd -c ./rapidbusd.conf.example
 # install binary and template config file by copying

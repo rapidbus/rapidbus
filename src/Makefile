@@ -22,6 +22,7 @@ run: all
 check:
 	cppcheck *.c *.h
 	clang-format -i *.c *.h
+#	scan-build-13 --status-bugs make
 
 install:
 	cp rapidbusd.conf.example /etc/rapidbusd.conf

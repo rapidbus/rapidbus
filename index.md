@@ -20,9 +20,22 @@ The latest version of the binary can be downloaded from https://github.com/rapid
 
 Building is done using docker command - please install docker before running the build scripts. RapidBus DOES NOT RUN IN DOCKER BY DEFAULT, its merely using docker to build the binary so you dont have to install dependencies and build enviromnet on your system.
 
-#### Building for Debian 11 (bullseye)
+#### Building for Debian 10 (buster)
 
-Compilation on Debian version before "bullseye" (Debian 11) is not supported as it does not include package https://packages.debian.org/bullseye/libpaho-mqtt-dev
+Compilation is using PAHO MQTT C libraries from https://github.com/eclipse/paho.mqtt.c repository and statically linking them.
+
+```
+git clone https://github.com/rapidbus/rapidbus.git
+cd rapidbus/src
+build-debian10.sh
+# test newly-compiled binary:
+./rapidbusd -c ./rapidbusd.conf.example
+# install binary and template config file by copying
+cp rapidbusd.conf.example /etc/rapidbusd.conf
+cp rapidbusd /usr/local/bin
+```
+
+#### Building for Debian 11 (bullseye)
 
 Compilation is using PAHO MQTT C libraries directly from Debian repository and statically linking them.
 

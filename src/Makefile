@@ -1,4 +1,4 @@
-VERSION=-D RAPIDBUS_VERSION=\"0.0.1\"
+VERSION=-D RAPIDBUS_VERSION=\"0.1.1\"
 #CC=clang-13
 CFLAGS=-v -std=gnu99 -O0 -Wall -Wextra -Wpedantic -pedantic -pedantic-errors
 LDFLAGS=-lpthread /usr/local/lib64/libpaho-mqtt3a.a -lrt
@@ -16,7 +16,8 @@ clean:
 	rm -f rapidbusd rapidbusd.o
 	echo "Clean done"
 
-run: all
+run:
+	./build-debian11.sh
 	./rapidbusd -c ./rapidbusd.conf.example
 
 check:

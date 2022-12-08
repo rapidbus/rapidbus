@@ -26,6 +26,8 @@ MQTTAsync client;
 uint8_t mqtt_connected = 0;
 mqtt_conf_t mqtt_config;
 
+uint8_t verbose = 0;
+
 timer_t timerid;
 int ser;
 
@@ -163,11 +165,13 @@ int open_port(void) {
 float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   uint32_t wait_for_response_for_ms = 40;
 
-  printf("Requesting data... ");
-  for (uint8_t a = 0; a < r_count; a++) {
-    printf(" %X", modbus_request[a]);
+  if (verbose) {
+    printf("Requesting data... ");
+    for (uint8_t a = 0; a < r_count; a++) {
+      printf(" %X", modbus_request[a]);
+    }
+    printf("\n");
   }
-  printf("\n");
   // flushing old data
   int result = tcflush(ser, TCIOFLUSH);
   if (result) {
@@ -201,12 +205,13 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
     printf("PROBLEM: Reading from serial interface returned error. Skipping read.\n");
     return -1;
   }
-
-  printf("Received data  ...  ");
-  for (int16_t a = 0; a < readbytes; a++) {
-    printf("%X ", rx_buffer[a]);
+  if (verbose) {
+    printf("Received data  ...  ");
+    for (int16_t a = 0; a < readbytes; a++) {
+      printf("%X ", rx_buffer[a]);
+    }
+    printf("\n");
   }
-  printf("\n");
 
   // check MODBUS CRC
   if (!checkModbusCRC(rx_buffer, readbytes - 2, rx_buffer[readbytes - 2],
@@ -218,7 +223,11 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   for (uint8_t a = 3; a < 3 + 4; a++) {
     b4_helper.b[a - 3] = rx_buffer[a];
   }
-  printf("Value: %f\n", b4_helper.f);
+  // clear the buffer to prevent data from leaking
+  memset(rx_buffer, 0, sizeof(rx_buffer));
+  if (verbose) {
+    printf("Interpreted value: %f\n", b4_helper.f);
+  }
   // TODO: here, we should also fill up *rb to return data to caller
   return b4_helper.f;
 }
@@ -245,8 +254,10 @@ void timer_callback(__attribute__((unused)) int sig) {
                    a, tasks[a].period_ms, tasks[a].last_run);
       */
       if ((uint64_t)tasks[a].period_ms <= ms - tasks[a].last_run) {
-        printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
-               tasks[a].query_name, ms, tasks[a].period_ms);
+        if (verbose) {
+          printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
+                 tasks[a].query_name, ms, tasks[a].period_ms);
+        }
         if (tasks[a].interpret_as == f32) {
           float_value = get_modbus_data(modbus_request, sizeof(modbus_request));
           sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
@@ -273,18 +284,25 @@ int main(int argc, char *argv[]) {
 
   strlcpy(config_file, "/etc/rapidbusd.conf", sizeof(config_file));
 
-  while ((opt = getopt(argc, argv, "c:h")) != -1)
+  while ((opt = getopt(argc, argv, "c:hv")) != -1)
     switch (opt) {
     case 'c':
       printf("Option -c (config file path) was provided with a value of \"%s\"\n", optarg);
       strlcpy(config_file, optarg, sizeof(config_file));
       break;
     case 'h':
-      printf("RapidBus (from rapidbus.org) version: %s\n", RAPIDBUS_VERSION);
-      printf("Usage: %s [-c config_file]\n", argv[0]);
+      printf("RapidBus (from rapidbus.org) version: %s\nMODBUS RTU to MQTT bridge\n",
+             RAPIDBUS_VERSION);
+      printf("Usage: %s [-c config_file] [-v]\n", argv[0]);
+      printf("  -c <config_file>   Path to config file. Default: /etc/rapidbusd.conf\n"
+             "  -v                 Be verbose in output. Default: not set\n");
       exit(EXIT_OK);
+    case 'v':
+      printf("Verbose output enabled\n");
+      verbose = 1;
+      break;
     default:
-      fprintf(stderr, "Usage: %s [-c config_file]\n", argv[0]);
+      fprintf(stderr, "Usage: %s [-c config_file] [-v]\n", argv[0]);
       exit(ERROR_USAGE);
     }
 

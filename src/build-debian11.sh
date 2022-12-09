@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # podman or docker
-DENGINE="podman"
+DENGINE="docker"
 
 set -e
 

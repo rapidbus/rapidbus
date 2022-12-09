@@ -2,13 +2,11 @@ FROM debian:11
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
+      gcc \
       clang-13 \
       clang-tools-13 make \
       libpaho-mqtt-dev libpaho-mqtt1.3 \
       cppcheck clang-format
-# symbolic link for Makefile to have the same path for Debian11 and RHEL8
-RUN mkdir -p /usr/local/lib64/
-RUN ln -s /usr/lib/x86_64-linux-gnu/libpaho-mqtt3a.a /usr/local/lib64/libpaho-mqtt3a.a
 WORKDIR /opt
 ENV CC clang-13
 RUN eval $CC -v

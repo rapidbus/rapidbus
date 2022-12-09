@@ -19,8 +19,4 @@ RUN cmake -DPAHO_BUILD_STATIC=TRUE -DPAHO_BUILD_SHARED=FALSE -DPAHO_WITH_SSL=FAL
 RUN make
 RUN make install
 
-# symbolic link for Makefile to have the same path for Debian10 and RHEL8
-RUN mkdir -p /usr/local/lib64/
-RUN ln -s /usr/local/lib/libpaho-mqtt3a.a /usr/local/lib64/libpaho-mqtt3a.a
-
 WORKDIR /opt

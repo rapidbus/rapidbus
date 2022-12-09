@@ -13,12 +13,10 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
     strategy:
       fail-fast: false
       matrix:
         language: [ 'cpp' ]
-
     steps:
     - name: Fetch Dependencies
       run: |
@@ -27,14 +25,8 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install \
           git \
-          curl \
-          wget \
-          build-essential \
-          autoconf-archive \
-          clang-tools-13 \
-          libpaho-mqtt-dev \
-          libpaho-mqtt1.3
-            
+          podman
+
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -45,7 +37,7 @@ jobs:
 
     - run: |
         cd src
-        make all
+        ./build-debian11.sh
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

@@ -1,0 +1,9 @@
+[Unit]
+Description=RapidBus daemon forwarding MODBUS RTU data to MQTT broker
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/rapidbusd
+Restart=always
+RestartSec=3

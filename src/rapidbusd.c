@@ -43,8 +43,7 @@ void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   // MQTTAsync_token token;
   int rc;
-  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id, MQTTCLIENT_PERSISTENCE_NONE,
-                   NULL);
+  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
   MQTTAsync_setCallbacks(client, NULL, mqtt_connlost, NULL, NULL);
   conn_opts.struct_version = 6;
   conn_opts.keepAliveInterval = 20;
@@ -107,7 +106,7 @@ int open_port(void) {
   options.c_lflag &= ~(ECHO | ECHONL | ECHOE | ICANON | ISIG | IEXTEN);
 
   options.c_cflag |= (CLOCAL | CREAD); // Ignore modem control lines; Enable receiver.
-  options.c_cflag &= ~CSIZE; // make sure the two bit values for the length of data is reset
+  options.c_cflag &= ~CSIZE;           // make sure the two bit values for the length of data is reset
 
   if (strcmp("8N1", vnets[0].serial_config) == 0) {
     options.c_cflag &= ~CSTOPB; // disable TWO stop bits (left with one)
@@ -162,7 +161,7 @@ int open_port(void) {
   return (fd);
 }
 
-float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
+int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_returned) {
   uint32_t wait_for_response_for_ms = 40;
 
   if (verbose) {
@@ -190,9 +189,10 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
 
   ioctl(ser, FIONREAD, &bytes_avail);
   if (!bytes_avail) {
-    printf("PROBLEM: Sensor did not respond within %ums. Skipping read.\n",
-           wait_for_response_for_ms);
-    return -1;
+    if (verbose) {
+      printf("PROBLEM: Sensor did not respond within %ums. Skipping read.\n", wait_for_response_for_ms);
+    }
+    return -2;
   }
 
   if (bytes_avail > sizeof(rx_buffer)) {
@@ -214,8 +214,7 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   }
 
   // check MODBUS CRC
-  if (!checkModbusCRC(rx_buffer, readbytes - 2, rx_buffer[readbytes - 2],
-                      rx_buffer[readbytes - 1])) {
+  if (!checkModbusCRC(rx_buffer, readbytes - 2, rx_buffer[readbytes - 2], rx_buffer[readbytes - 1])) {
     printf("CRC not correct - skipping parsing the modbus packet.\n");
     return -1;
   };
@@ -228,13 +227,15 @@ float get_modbus_data(uint8_t *modbus_request, uint8_t r_count) {
   if (verbose) {
     printf("Interpreted value: %f\n", b4_helper.f);
   }
-  // TODO: here, we should also fill up *rb to return data to caller
-  return b4_helper.f;
+
+  *float_returned = b4_helper.f;
+  return 1;
 }
 
 void timer_callback(__attribute__((unused)) int sig) {
   char msg[1024];
-  float float_value;
+  float float_value = 0;
+  int8_t retval;
   uint64_t ms = ts_millis();
   uint8_t modbus_request[] = {tasks[0].modbus_id,
                               tasks[0].modbus_function,
@@ -255,16 +256,22 @@ void timer_callback(__attribute__((unused)) int sig) {
       */
       if ((uint64_t)tasks[a].period_ms <= ms - tasks[a].last_run) {
         if (verbose) {
-          printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a,
-                 tasks[a].query_name, ms, tasks[a].period_ms);
+          printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a, tasks[a].query_name, ms,
+                 tasks[a].period_ms);
         }
         if (tasks[a].interpret_as == f32) {
-          float_value = get_modbus_data(modbus_request, sizeof(modbus_request));
-          sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
-                  ts_millis());
+          retval = get_modbus_data(modbus_request, sizeof(modbus_request), &float_value);
+          if (retval != 1) {
+            printf("Unable to read query '%s' from sensor '%s'. Use -v argument for more info.\n", tasks[a].query_name,
+                   tasks[a].node_name);
+            tasks[a].last_run = ms;
+            continue;
+          }
+          sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
         } else {
-          fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n",
-                  tasks[a].interpret_as, tasks[a].query_name);
+          fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n", tasks[a].interpret_as,
+                  tasks[a].query_name);
+          tasks[a].last_run = ms;
           continue;
         }
         msg[sizeof(msg) - 1] = '\0'; // just to be sure
@@ -291,8 +298,7 @@ int main(int argc, char *argv[]) {
       strlcpy(config_file, optarg, sizeof(config_file));
       break;
     case 'h':
-      printf("RapidBus (from rapidbus.org) version: %s\nMODBUS RTU to MQTT bridge\n",
-             RAPIDBUS_VERSION);
+      printf("RapidBus (from rapidbus.org) version: %s\nMODBUS RTU to MQTT bridge\n", RAPIDBUS_VERSION);
       printf("Usage: %s [-c config_file] [-v]\n", argv[0]);
       printf("  -c <config_file>   Path to config file. Default: /etc/rapidbusd.conf\n"
              "  -v                 Be verbose in output. Default: not set\n");
@@ -341,15 +347,15 @@ int main(int argc, char *argv[]) {
       printf("Disconnected from MQTT broker! Try to re-initialize "
              "connection...\n");
       mqtt_connect_to(&mqtt_config);
-      sleep(5);
+      sleep(10);
       if (mqtt_connected) {
         printf("Reconnected to MQTT broker! Restarting timer...\n");
         start_timer(&timerid);
       } else {
-        printf("Reconnection to MQTT broker failed! Try again in 10s...\n");
-        sleep(10);
+        printf("Reconnection to MQTT broker failed! Try again...\n");
       }
     }
+    sleep(10); // this will be interrupted by SIGALRM
   }
 
   close(ser);

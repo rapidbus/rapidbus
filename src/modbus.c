@@ -18,8 +18,7 @@ int8_t checkModbusCRC(uint8_t *data, uint16_t len, uint8_t orig_crc1, uint8_t or
     // printf("CRC correct!\n");
     return 1;
   } else {
-    printf("CRC not correct. Calculated:Packet %x:%x %x:%x\n", crc2 & 0xff, orig_crc1, crc2 >> 8,
-           orig_crc2);
+    printf("CRC not correct. Calculated:Packet %x:%x %x:%x\n", crc2 & 0xff, orig_crc1, crc2 >> 8, orig_crc2);
     return 0;
   };
 }

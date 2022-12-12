@@ -216,7 +216,9 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
       vi++;
     } else {
       if (line[0] != '#') {
-        printf("Unknown line in config file: %s\n", line);
+        printf("Unknown line in config file: '%s'. Make sure you have no blank lines in config "
+               "file. Start comments with '#'.\n",
+               line);
         exit(9);
       }
     }
@@ -224,8 +226,8 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
   fclose(fp);
   printf("##################### START Config show\n");
   printf("MQTT config loaded from config file:\n");
-  printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr,
-         mqtt_config->client_id, mqtt_config->topic);
+  printf("  Address: %s\n  Client ID: %s\n  Pub topic: %s\n", mqtt_config->addr, mqtt_config->client_id,
+         mqtt_config->topic);
   if (vi == 0) {
     printf("No serial virtual networks defined in config file! We need at least one!\n");
     exit(13);
@@ -246,8 +248,8 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
            "register: %u\n  "
            "Number of words to read: %u\n  Query period [ms]: %i\n  "
            "Interpret as: %u\n",
-           a, tasks[a].modbus_id, tasks[a].modbus_function, tasks[a].start_register,
-           tasks[a].wcount, tasks[a].period_ms, tasks[a].interpret_as);
+           a, tasks[a].modbus_id, tasks[a].modbus_function, tasks[a].start_register, tasks[a].wcount,
+           tasks[a].period_ms, tasks[a].interpret_as);
   }
   printf("##################### END Config show\n");
 }

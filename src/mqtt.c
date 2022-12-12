@@ -36,8 +36,7 @@ void mqtt_connlost(__attribute__((unused)) void *context, char *cause) {
   }
 }
 
-void mqtt_onDisconnect(__attribute__((unused)) void *context,
-                       __attribute__((unused)) MQTTAsync_successData *response) {
+void mqtt_onDisconnect(__attribute__((unused)) void *context, __attribute__((unused)) MQTTAsync_successData *response) {
   printf("Successful disconnection\n");
   mqtt_connected = 0;
 }
@@ -53,8 +52,7 @@ void mqtt_onConnectFailure(__attribute__((unused)) void *context, MQTTAsync_fail
   mqtt_connected = 0;
 }
 
-void mqtt_onConnect(__attribute__((unused)) void *context,
-                    __attribute__((unused)) MQTTAsync_successData *response) {
+void mqtt_onConnect(__attribute__((unused)) void *context, __attribute__((unused)) MQTTAsync_successData *response) {
   printf("Successful connection to MQTT broker!\n");
   mqtt_connected = 1;
 }

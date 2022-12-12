@@ -12,7 +12,7 @@ This program is written in C (standard: gnu99 (ISO C 1999 with GNU extensions)) 
   *  Written in modern C (not C++!!)
   *  Adheres to C standards
   *  External libraries are statically linked so no dependencies should be necessary
-  *  Simple text-based (CVS) configuration script - can even be manged through Excel and commited into git
+  *  Simple text-based (CVS) configuration script - can even be managed through Excel and commited into git
   *  One binary file, no external files
   *  Designed to be fail-proof - for example if network crashes the connections will be re-created and software will not stop
   *  Designed to be used with minimal administration overhead

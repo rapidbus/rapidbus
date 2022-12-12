@@ -1,0 +1,18 @@
+FROM alpine:3
+
+RUN apk -U upgrade
+RUN apk add \
+      clang15 \
+      clang15-extra-tools \
+      clang15-analyzer \
+      openssl-dev \
+      make cmake git build-base
+WORKDIR /opt
+RUN git clone --depth 1 --branch v1.3.11 https://github.com/eclipse/paho.mqtt.c.git
+WORKDIR /opt/paho.mqtt.c
+RUN cmake -DPAHO_BUILD_STATIC=TRUE -DPAHO_BUILD_SHARED=FALSE -DPAHO_WITH_SSL=TRUE
+RUN make
+RUN make install
+WORKDIR /opt
+ENV CC clang
+RUN eval $CC -v

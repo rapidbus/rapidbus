@@ -39,11 +39,11 @@ union {
   uint8_t b[4];
 } b4_helper;
 
-void mqtt_connect_to(mqtt_conf_t *mqtt_config) {
+void mqtt_connect_to(mqtt_conf_t *mqtt_lconfig) {
   MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
   // MQTTAsync_token token;
   int rc;
-  MQTTAsync_create(&client, mqtt_config->addr, mqtt_config->client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+  MQTTAsync_create(&client, mqtt_lconfig->addr, mqtt_lconfig->client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
   MQTTAsync_setCallbacks(client, NULL, mqtt_connlost, NULL, NULL);
   conn_opts.struct_version = 6;
   conn_opts.keepAliveInterval = 20;

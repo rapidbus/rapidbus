@@ -1,6 +1,15 @@
-VERSION=-D RAPIDBUS_VERSION=\"0.1.1\"
+VERSION=-D RAPIDBUS_VERSION=\"0.1.2\"
+
 #CC=gcc
-CFLAGS=-std=gnu99 -O0 -Wall -Wextra -Wpedantic -pedantic -pedantic-errors
+
+CFLAGS=-std=gnu99 -O0 -Wall -Wextra -Wpedantic -pedantic -pedantic-errors -Werror \
+      -Wformat=2 -Wno-unused-parameter -Wshadow \
+      -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
+      -Wnested-externs -Wmissing-include-dirs -Wredundant-decls \
+      -D_FORTIFY_SOURCE=2 -fpie -fpic -g3 -fstack-protector-strong -grecord-gcc-switches \
+      -Werror=format-security -Werror=implicit-function-declaration \
+      -Wmisleading-indentation -fno-omit-frame-pointer -fsanitize=address
+
 LDFLAGS=-lpthread -lrt -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -l:libpaho-mqtt3a.a
 
 .ONESHELL:

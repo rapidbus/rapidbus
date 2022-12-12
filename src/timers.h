@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 
-uint64_t ts_millis();
+uint64_t ts_millis(void);
 void start_timer(timer_t *timerid);
 void stop_timer(timer_t *timerid);
 

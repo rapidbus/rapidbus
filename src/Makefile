@@ -1,5 +1,4 @@
-VERSION_FILE := version.txt
-VERSION :=$(file < $(VERSION_FILE))
+VERSION = $(shell cat version.txt)
 VERSION_FLAG=-D RAPIDBUS_VERSION=\"$(VERSION)\"
 
 #CC=gcc
@@ -23,7 +22,7 @@ LDFLAGS=-lpthread -lrt -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -l:libpaho-m
 all: clean rapidbusd
 
 rapidbusd:
-	$(CC) $(CFLAGS) $(VERSION) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c strlcpy.c $(LDFLAGS)
+	$(CC) $(CFLAGS) $(VERSION_FLAG) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c strlcpy.c $(LDFLAGS)
 
 clean:
 	rm -f rapidbusd rapidbusd.o

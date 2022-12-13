@@ -1,4 +1,5 @@
-SOURCES
-.vscode
-rapidbusd.conf
+rapidbusd-*.tar.gz
 rapidbusd
+.vscode
+SOURCES
+rapidbusd.conf

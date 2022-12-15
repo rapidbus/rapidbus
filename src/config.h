@@ -7,7 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum ias { u8, s8, u16, s16, u32, s32, f32 };
+enum ias {
+  u8,
+  s8,
+  u16,
+  s16,
+  u32,
+  s32,
+  f32
+};
 
 typedef struct mqtt_conf_t {
   char addr[256];

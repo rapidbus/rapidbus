@@ -17,6 +17,8 @@
 #define MAX_TASKS_COUNT 256
 #define MAX_VNETS_COUNT 16
 
+#define CSV_PAYLOAD_FLOAT "%s,%s,%f,%lu,"
+
 task_t tasks[MAX_TASKS_COUNT];
 vnet_t vnets[MAX_VNETS_COUNT];
 
@@ -27,6 +29,9 @@ uint8_t mqtt_connected = 0;
 mqtt_conf_t mqtt_config;
 
 uint8_t verbose = 0;
+uint8_t data_to_file = 0;
+
+FILE *data_file_fp; // file pointer to file where collected data will be written to if so requested by argument
 
 timer_t timerid;
 int ser;
@@ -142,9 +147,8 @@ int open_port(void) {
     cfsetospeed(&options, B115200);
     break;
   default:
-    fprintf(stderr,
-            "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
-            "%s in config file!.\n",
+    fprintf(stderr, "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
+                    "%s in config file!.\n",
             vnets[0].baudrate, vnets[0].name);
     exit(ERROR_BAUD_NOT_SUPPORTED);
   }
@@ -182,7 +186,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_re
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");
   }
-  nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
+  nanosleep((const struct timespec[]) { { 0, wait_for_response_for_ms * 1000000L } }, NULL);
 
   uint16_t bytes_avail;
   uint8_t rx_buffer[1024];
@@ -233,18 +237,14 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_re
 }
 
 void timer_callback(__attribute__((unused)) int sig) {
-  char msg[1024];
+  char mqtt_msg[1024];
+  char csv_msg[1024];
   float float_value = 0;
   int8_t retval;
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = {tasks[0].modbus_id,
-                              tasks[0].modbus_function,
-                              tasks[0].start_register >> 8,
-                              tasks[0].start_register & 0xFF,
-                              tasks[0].wcount >> 8,
-                              tasks[0].wcount & 0xFF,
-                              0x14,
-                              0x09};
+  uint8_t modbus_request[] = { tasks[0].modbus_id,             tasks[0].modbus_function, tasks[0].start_register >> 8,
+                               tasks[0].start_register & 0xFF, tasks[0].wcount >> 8,     tasks[0].wcount & 0xFF,
+                               0x14,                           0x09 };
 
   stop_timer(&timerid);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -267,16 +267,24 @@ void timer_callback(__attribute__((unused)) int sig) {
             tasks[a].last_run = ms;
             continue;
           }
-          sprintf(msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
+          sprintf(mqtt_msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
+          sprintf(csv_msg, CSV_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
         } else {
           fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n", tasks[a].interpret_as,
                   tasks[a].query_name);
           tasks[a].last_run = ms;
           continue;
         }
-        msg[sizeof(msg) - 1] = '\0'; // just to be sure
-        printf("%s\n", msg);
-        mqtt_pubMsg(msg, strnlen(msg, sizeof(msg)));
+        mqtt_msg[sizeof(mqtt_msg) - 1] = '\0'; // just to be sure that there is a proper string ending
+        csv_msg[sizeof(csv_msg) - 1] = '\0';   // just to be sure that there is a proper string ending
+        printf("%s\n", mqtt_msg);
+        if (data_to_file) {
+          if (verbose) {
+            printf("Appending line to file: %s\n", data_to_file);
+            fprintf(data_file_fp, "%s\n", csv_msg);
+          }
+        }
+        mqtt_pubMsg(mqtt_msg, strnlen(mqtt_msg, sizeof(mqtt_msg)));
         tasks[a].last_run = ms;
       }
     }
@@ -304,6 +312,10 @@ int main(int argc, char *argv[]) {
              "  -v                 Be verbose in output. Default: not set\n");
       exit(EXIT_OK);
     case 'v':
+      printf("Saving data to file enabled\n");
+      data_to_file = 1;
+      break;
+    case 'v':
       printf("Verbose output enabled\n");
       verbose = 1;
       break;
@@ -311,6 +323,13 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "Usage: %s [-c config_file] [-v]\n", argv[0]);
       exit(ERROR_USAGE);
     }
+
+  if (data_to_file) {
+    if ((data_file_fp = fopen("data_file.csv", "a")) == NULL) {
+      printf("Unable to open data file for append operation. fopen() error number: %i\n", errno);
+      exit(ERROR_OPEN_FILE_FAILED);
+    }
+  }
 
   printf("Initial struct def values for config (max tasks: %i)\n", MAX_TASKS_COUNT);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {

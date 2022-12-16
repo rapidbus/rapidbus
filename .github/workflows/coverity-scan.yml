@@ -25,7 +25,7 @@ jobs:
             build-essential \
             autoconf-archive \
             clang-tools-13 \
-            clang-13 \
+            clang-13 clang-format \
             make \
             libpaho-mqtt-dev \
             libpaho-mqtt1.3

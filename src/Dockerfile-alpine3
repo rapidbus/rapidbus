@@ -6,7 +6,7 @@ RUN apk add \
       clang15-extra-tools \
       clang15-analyzer \
       openssl-dev \
-      make cmake git build-base
+      make cmake git build-base cppcheck
 WORKDIR /opt
 RUN git clone --depth 1 --branch v1.3.11 https://github.com/eclipse/paho.mqtt.c.git
 WORKDIR /opt/paho.mqtt.c

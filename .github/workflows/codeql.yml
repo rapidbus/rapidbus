@@ -28,6 +28,7 @@ jobs:
         sudo apt-get -y install \
           git \
           curl \
+          cppcheck \
           wget \
           build-essential \
           autoconf-archive \

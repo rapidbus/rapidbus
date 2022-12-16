@@ -1,11 +1,12 @@
 FROM almalinux:8
 
 WORKDIR /opt
-RUN dnf install -y git clang make openssl-devel cmake
+RUN dnf install -y dnf-plugins-core
+RUN yum config-manager --set-enabled powertools
+RUN dnf install -y git clang make openssl-devel cmake cppcheck clang-tools-extra
 RUN git clone --depth 1 --branch v1.3.11 https://github.com/eclipse/paho.mqtt.c.git
 WORKDIR /opt/paho.mqtt.c
-#RUN cmake -DPAHO_BUILD_STATIC=TRUE -DPAHO_BUILD_SHARED=FALSE -DPAHO_WITH_SSL=TRUE
-RUN cmake -DPAHO_BUILD_STATIC=TRUE -DPAHO_BUILD_SHARED=FALSE -DPAHO_WITH_SSL=FALSE
+RUN cmake -DPAHO_BUILD_STATIC=TRUE -DPAHO_BUILD_SHARED=FALSE -DPAHO_WITH_SSL=TRUE
 RUN make
 RUN make install
 ENV CC clang

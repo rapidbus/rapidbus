@@ -58,3 +58,5 @@ build_rhel8:
 
 build_rhel9:
 	./build.sh rhel9
+
+build_all: build_alpine3 build_debian10 build_debian11 build_rhel8 build_rhel9

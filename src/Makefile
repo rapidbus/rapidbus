@@ -19,7 +19,7 @@ LDFLAGS=-lpthread -lrt -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu -l:libpaho-m
 #.SHELLFLAGS += -e
 .PHONY: clean check
 
-all: rapidbusd
+all: clean check rapidbusd
 
 rapidbusd:
 	$(CC) $(CFLAGS) $(VERSION_FLAG) -o rapidbusd rapidbusd.c config.c timers.c modbus.c mqtt.c strlcpy.c $(LDFLAGS)
@@ -28,7 +28,7 @@ clean:
 	rm -f rapidbusd rapidbusd.o
 	echo "Clean done"
 
-run: rapidbusd
+run: all
 	./rapidbusd -c ./rapidbusd.conf.example
 
 check:

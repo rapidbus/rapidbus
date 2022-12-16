@@ -147,8 +147,9 @@ int open_port(void) {
     cfsetospeed(&options, B115200);
     break;
   default:
-    fprintf(stderr, "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
-                    "%s in config file!.\n",
+    fprintf(stderr,
+            "warning: Baud rate %u is not supported by RapidBus. Change setting forvirtuan network "
+            "%s in config file!.\n",
             vnets[0].baudrate, vnets[0].name);
     exit(ERROR_BAUD_NOT_SUPPORTED);
   }
@@ -186,7 +187,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_re
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");
   }
-  nanosleep((const struct timespec[]) { { 0, wait_for_response_for_ms * 1000000L } }, NULL);
+  nanosleep((const struct timespec[]){{0, wait_for_response_for_ms * 1000000L}}, NULL);
 
   uint16_t bytes_avail;
   uint8_t rx_buffer[1024];
@@ -273,7 +274,7 @@ void timer_callback(__attribute__((unused)) int sig) {
             continue;
           }
           sprintf(mqtt_msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
-          sprintf(csv_msg, CSV_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
+          sprintf(csv_msg, CSV_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
         } else {
           fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n", tasks[a].interpret_as,
                   tasks[a].query_name);
@@ -285,7 +286,7 @@ void timer_callback(__attribute__((unused)) int sig) {
         printf("%s\n", mqtt_msg);
         if (data_to_file) {
           if (verbose) {
-            printf("Appending line to file: %s\n", data_to_file);
+            printf("Appending line to file: %s\n", csv_msg);
             fprintf(data_file_fp, "%s\n", csv_msg);
           }
         }
@@ -304,7 +305,7 @@ int main(int argc, char *argv[]) {
 
   strlcpy(config_file, "/etc/rapidbusd.conf", sizeof(config_file));
 
-  while ((opt = getopt(argc, argv, "c:hv")) != -1)
+  while ((opt = getopt(argc, argv, "c:hsv")) != -1)
     switch (opt) {
     case 'c':
       printf("Option -c (config file path) was provided with a value of \"%s\"\n", optarg);
@@ -316,7 +317,7 @@ int main(int argc, char *argv[]) {
       printf("  -c <config_file>   Path to config file. Default: /etc/rapidbusd.conf\n"
              "  -v                 Be verbose in output. Default: not set\n");
       exit(EXIT_OK);
-    case 'v':
+    case 's':
       printf("Saving data to file enabled\n");
       data_to_file = 1;
       break;

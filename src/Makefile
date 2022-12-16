@@ -28,8 +28,7 @@ clean:
 	rm -f rapidbusd rapidbusd.o
 	echo "Clean done"
 
-run:
-	./build-debian11.sh
+run: rapidbusd
 	./rapidbusd -c ./rapidbusd.conf.example
 
 check:
@@ -45,17 +44,17 @@ uninstall:
 	mv /etc/rapidbusd.conf /etc/rapidbusd.conf.old
 	rm -f /usr/local/bin/rapidbusd
 
-build_rhel7:
-	$(eval DISTRO=rhel7)
-	docker build -f Dockerfile-$(DISTRO) -t rapidbus/build-$(DISTRO) . ; \
-	docker run -it -v $(shell pwd):/opt/rapidbus --entrypoint /bin/sh rapidbus/build-$(DISTRO) -c "cd /opt/rapidbus/; make all; ./rapidbusd -h" ; \
-	rm -f rapidbusd-$$VERSION_$(DISTRO).tar.gz ; \
-	tar czfv rapidbusd-$$VERSION_$(DISTRO).tar.gz rapidbusd rapidbusd.conf.example ; \
+build_alpine3:
+	./build.sh alpine3
 
-build_all:
-	for DISTRO in alpine3 debian10 debian11 rhel8 rhel9; do \
-		docker build -f Dockerfile-$$DISTRO -t rapidbus/build-$$DISTRO . ; \
-		docker run -it -v $(shell pwd):/opt/rapidbus --entrypoint /bin/sh rapidbus/build-$$DISTRO -c "cd /opt/rapidbus/; make all; ./rapidbusd -h" ; \
-		rm -f rapidbusd-$$VERSION_$$DISTRO.tar.gz ; \
-		tar czfv rapidbusd-$$VERSION_$$DISTRO.tar.gz rapidbusd rapidbusd.conf.example ; \
-	done
+build_debian10:
+	./build.sh debian10
+
+build_debian11:
+	./build.sh debian11
+
+build_rhel8:
+	./build.sh rhel8
+
+build_rhel9:
+	./build.sh rhel9

@@ -242,9 +242,7 @@ void timer_callback(__attribute__((unused)) int sig) {
   float float_value = 0;
   int8_t retval;
   uint64_t ms = ts_millis();
-  uint8_t modbus_request[] = { tasks[0].modbus_id,             tasks[0].modbus_function, tasks[0].start_register >> 8,
-                               tasks[0].start_register & 0xFF, tasks[0].wcount >> 8,     tasks[0].wcount & 0xFF,
-                               0x14,                           0x09 };
+  uint8_t modbus_request[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
   stop_timer(&timerid);
   for (uint16_t a = 0; a < MAX_TASKS_COUNT; a++) {
@@ -259,6 +257,13 @@ void timer_callback(__attribute__((unused)) int sig) {
           printf("Decided to execute task ID %d query_name: %s @%lu period: %ims\n", a, tasks[a].query_name, ms,
                  tasks[a].period_ms);
         }
+        modbus_request[0] = tasks[a].modbus_id;
+        modbus_request[1] = tasks[a].modbus_function;
+        modbus_request[2] = tasks[a].start_register >> 8;
+        modbus_request[3] = tasks[a].start_register & 0xFF;
+        modbus_request[4] = tasks[a].wcount >> 8;
+        modbus_request[5] = tasks[a].wcount & 0xFF;
+        getModbusCRC(modbus_request, sizeof(modbus_request) - 2, &modbus_request[6], &modbus_request[7]);
         if (tasks[a].interpret_as == f32) {
           retval = get_modbus_data(modbus_request, sizeof(modbus_request), &float_value);
           if (retval != 1) {

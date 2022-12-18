@@ -3,3 +3,4 @@ rapidbusd
 .vscode
 SOURCES
 rapidbusd.conf
+data_file.csv

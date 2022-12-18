@@ -166,7 +166,7 @@ int open_port(void) {
   return (fd);
 }
 
-int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_returned) {
+int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
   uint32_t wait_for_response_for_ms = 40;
 
   if (verbose) {
@@ -224,16 +224,13 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, float *float_re
     return -1;
   };
 
+  // copy the data to the return buffer
   for (uint8_t a = 3; a < 3 + 4; a++) {
-    b4_helper.b[a - 3] = rx_buffer[a];
-  }
-  // clear the buffer to prevent data from leaking
-  memset(rx_buffer, 0, sizeof(rx_buffer));
-  if (verbose) {
-    printf("Interpreted value: %f\n", b4_helper.f);
+    ret[a - 3] = rx_buffer[a];
   }
 
-  *float_returned = b4_helper.f;
+  // clear the buffer to prevent data from leaking
+  memset(rx_buffer, 0, sizeof(rx_buffer));
   return 1;
 }
 
@@ -265,14 +262,20 @@ void timer_callback(__attribute__((unused)) int sig) {
         modbus_request[4] = tasks[a].wcount >> 8;
         modbus_request[5] = tasks[a].wcount & 0xFF;
         getModbusCRC(modbus_request, sizeof(modbus_request) - 2, &modbus_request[6], &modbus_request[7]);
+
+        uint8_t ret_data[tasks[a].wcount * 2];
+
+        retval = get_modbus_data(modbus_request, sizeof(modbus_request), ret_data);
+        if (retval != 1) {
+          printf("Unable to read query '%s' from sensor '%s'. Use -v argument for more info.\n", tasks[a].query_name,
+                 tasks[a].node_name);
+          tasks[a].last_run = ms;
+          continue;
+        }
+
         if (tasks[a].interpret_as == f32) {
-          retval = get_modbus_data(modbus_request, sizeof(modbus_request), &float_value);
-          if (retval != 1) {
-            printf("Unable to read query '%s' from sensor '%s'. Use -v argument for more info.\n", tasks[a].query_name,
-                   tasks[a].node_name);
-            tasks[a].last_run = ms;
-            continue;
-          }
+          memcpy(b4_helper.b, ret_data, sizeof(b4_helper.b));
+          float_value = b4_helper.f;
           sprintf(mqtt_msg, MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
           sprintf(csv_msg, CSV_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
         } else {
@@ -288,6 +291,7 @@ void timer_callback(__attribute__((unused)) int sig) {
           if (verbose) {
             printf("Appending line to file: %s\n", csv_msg);
             fprintf(data_file_fp, "%s\n", csv_msg);
+            fflush(NULL);
           }
         }
         mqtt_pubMsg(mqtt_msg, strnlen(mqtt_msg, sizeof(mqtt_msg)));

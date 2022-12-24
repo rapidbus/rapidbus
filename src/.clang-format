@@ -4,3 +4,4 @@ TabWidth: 2
 IndentWidth: 2
 ContinuationIndentWidth: 2
 AlignAfterOpenBracket: Align
+IndentPPDirectives: AfterHash

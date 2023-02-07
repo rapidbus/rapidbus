@@ -221,7 +221,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
   if (!checkModbusCRC(rx_buffer, readbytes - 2, rx_buffer[readbytes - 2], rx_buffer[readbytes - 1])) {
     printf("CRC not correct - skipping parsing the modbus packet.\n");
     return -1;
-  };
+  }
 
   // copy the data to the return buffer
   for (uint8_t a = 3; a < 3 + 4; a++) {

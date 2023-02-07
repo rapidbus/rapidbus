@@ -1,0 +1,44 @@
+name: SonarCloud
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * *' # Daily at 5:00 UTC
+
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-22.04
+    env:
+      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+    steps:
+      - name: Fetch Dependencies
+        run: |
+          set -x
+          set -e
+          sudo apt-get update
+          sudo apt-get -y install \
+          git \
+          curl \
+          cppcheck \
+          wget \
+          build-essential \
+          autoconf-archive \
+          clang-tools-13 \
+          libpaho-mqtt-dev \
+          libpaho-mqtt1.3
+          
+      - uses: actions/checkout@v3
+      - name: Install sonar-scanner and build-wrapper
+        uses: SonarSource/sonarcloud-github-c-cpp@v1
+      - name: Run build-wrapper
+        run: |
+          cd src
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make all
+      - name: Run sonar-scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd src
+          sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}"

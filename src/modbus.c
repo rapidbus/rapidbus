@@ -2,7 +2,7 @@
 #include <stdio.h> /* Standard input/output definitions */
 
 // Accepts an input buffer and its length and fills the provided pointers with the calculated CRC
-void getModbusCRC(uint8_t *data, uint16_t len, uint8_t *ret_crc1, uint8_t *ret_crc2) {
+void getModbusCRC(const uint8_t *data, uint16_t len, uint8_t *ret_crc1, uint8_t *ret_crc2) {
   uint16_t crc2 = 0xffff;
   for (uint16_t i = 0; i < len; i++) {
     crc2 ^= (0xff & data[i]);
@@ -19,7 +19,7 @@ void getModbusCRC(uint8_t *data, uint16_t len, uint8_t *ret_crc1, uint8_t *ret_c
   *ret_crc2 = crc2 >> 8;
 }
 
-int8_t checkModbusCRC(uint8_t *data, uint16_t len, uint8_t orig_crc1, uint8_t orig_crc2) {
+int8_t checkModbusCRC(const uint8_t *data, uint16_t len, uint8_t orig_crc1, uint8_t orig_crc2) {
   uint16_t crc2 = 0xffff;
   for (uint16_t i = 0; i < len; i++) {
     crc2 ^= (0xff & data[i]);

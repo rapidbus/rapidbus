@@ -162,7 +162,7 @@ int open_port(void) {
   }
   printf("Done setting up serial interface.\n");
 
-  return (fd);
+  return fd;
 }
 
 int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {

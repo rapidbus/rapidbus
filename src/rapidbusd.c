@@ -203,7 +203,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
     printf("PROBLEM: Sensor sent more than %zu bytes. Skipping read.\n", sizeof(rx_buffer));
     return -1;
   }
-  int16_t readbytes = read(ser, rx_buffer, bytes_avail);
+  ssize_t readbytes = read(ser, rx_buffer, bytes_avail);
 
   if (readbytes == -1) {
     printf("PROBLEM: Reading from serial interface returned error. Skipping read.\n");
@@ -217,7 +217,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
 
   if (verbose) {
     printf("Received data  ...  ");
-    for (int16_t a = 0; a < readbytes; a++) {
+    for (ssize_t a = 0; a < readbytes; a++) {
       printf("%X ", rx_buffer[a]);
     }
     printf("\n");

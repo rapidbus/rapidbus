@@ -82,5 +82,6 @@ void mqtt_pubMsg(char *message, uint16_t message_len) {
            rc);
     mqtt_connected = 0;
   } else {
+    printf("mqtt_pubMsg: Ignoring unknown return code: %d)\n", rc);
   }
 }

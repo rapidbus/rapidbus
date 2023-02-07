@@ -21,7 +21,7 @@ void read_config(char *config_file, mqtt_conf_t *mqtt_config, task_t *tasks, vne
     if (line[0] == 'm') {
       for (size_t a = 0; a < strnlen(line, sizeof(line)); a++) {
         if (((uint8_t)line[a] < 44) || ((uint8_t)line[a] > 122)) {
-          printf("Found strange character on position %zu => ending query line "
+          printf("Found strange character on position %zu => ending MQTT config line "
                  "definition on this position!\n",
                  a);
           line[a] = '\0';

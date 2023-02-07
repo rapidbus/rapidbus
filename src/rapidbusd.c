@@ -333,11 +333,9 @@ int main(int argc, char *argv[]) {
       exit(ERROR_USAGE);
     }
 
-  if (data_to_file) {
-    if ((data_file_fp = fopen("data_file.csv", "a")) == NULL) {
-      printf("Unable to open data file for append operation. fopen() error number: %i\n", errno);
-      exit(ERROR_OPEN_FILE_FAILED);
-    }
+  if (data_to_file && ((data_file_fp = fopen("data_file.csv", "a")) == NULL)) {
+    printf("Unable to open data file for append operation. fopen() error number: %i\n", errno);
+    exit(ERROR_OPEN_FILE_FAILED);
   }
 
   printf("Initial struct def values for config (max tasks: %i)\n", MAX_TASKS_COUNT);

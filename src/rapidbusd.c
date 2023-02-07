@@ -289,9 +289,9 @@ void timer_callback(__attribute__((unused)) int sig) {
         if (data_to_file) {
           if (verbose) {
             printf("Appending line to file: %s\n", csv_msg);
-            fprintf(data_file_fp, "%s\n", csv_msg);
-            fflush(NULL);
           }
+          fprintf(data_file_fp, "%s\n", csv_msg);
+          fflush(NULL);
         }
         mqtt_pubMsg(mqtt_msg, strnlen(mqtt_msg, sizeof(mqtt_msg)));
         tasks[a].last_run = ms;

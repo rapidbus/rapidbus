@@ -209,6 +209,12 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
     printf("PROBLEM: Reading from serial interface returned error. Skipping read.\n");
     return -1;
   }
+
+  if (readbytes <= 2) {
+    printf("PROBLEM: Reading from serial interface returned too little data!\n");
+    return -1;
+  }
+
   if (verbose) {
     printf("Received data  ...  ");
     for (int16_t a = 0; a < readbytes; a++) {

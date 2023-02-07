@@ -181,7 +181,7 @@ int8_t get_modbus_data(uint8_t *modbus_request, uint8_t r_count, uint8_t *ret) {
     perror("PROBLEM!! tcflush failed - looks like problem with serial subsystem on OS!");
     exit(ERROR_TCFLUSH_FAILED);
   }
-  int8_t n = write(ser, modbus_request, r_count);
+  ssize_t n = write(ser, modbus_request, r_count);
   if (n != r_count) {
     printf("write() of %u bytes failed!\n", r_count);
     perror("write() failed!\n");

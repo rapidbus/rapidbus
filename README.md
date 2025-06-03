@@ -2,7 +2,7 @@
 
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/27066/badge.svg)](https://scan.coverity.com/projects/rapidbus-rapidbus)
 [![CodeQL](https://github.com/rapidbus/rapidbus/actions/workflows/codeql.yml/badge.svg)](https://github.com/rapidbus/rapidbus/actions/workflows/codeql.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8f60348054ba49e9b39f5a71de5109c2)](https://www.codacy.com/gh/rapidbus/rapidbus/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rapidbus/rapidbus&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a74f50557c9548d0afdb4dd5df780d11)](https://app.codacy.com/gh/rapidbus/rapidbus/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=rapidbus_rapidbus&metric=bugs)](https://sonarcloud.io/summary/new_code?id=rapidbus_rapidbus)
 
 rapidbus is a bridging application between Operational Technologies and Information Technologies (OT/IT) connecting serial-enabled sensors to MQTT broker. Essentially forwarding metering data from serial interface over MODBUS RTU to MQTT broker.

@@ -34,7 +34,7 @@ jobs:
           
       - uses: actions/checkout@v4
       - name: Install sonar-scanner and build-wrapper
-        uses: SonarSource/sonarcloud-github-c-cpp@e97353a87c0002360027f5089000000000000000
+        uses: SonarSource/sonarcloud-github-c-cpp@v1
       - name: Run build-wrapper
         run: |
           cd src

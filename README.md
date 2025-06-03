@@ -1,7 +1,6 @@
 # rapidbus
 
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/27066/badge.svg)](https://scan.coverity.com/projects/rapidbus-rapidbus)
-[![CodeQL](https://github.com/rapidbus/rapidbus/actions/workflows/codeql.yml/badge.svg)](https://github.com/rapidbus/rapidbus/actions/workflows/codeql.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/a74f50557c9548d0afdb4dd5df780d11)](https://app.codacy.com/gh/rapidbus/rapidbus/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=rapidbus_rapidbus&metric=bugs)](https://sonarcloud.io/summary/new_code?id=rapidbus_rapidbus)
 

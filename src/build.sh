@@ -12,7 +12,7 @@ set -x
 DISTRO=$1
 read -r VERSION < version.txt
 
-docker build -f Dockerfile-$DISTRO -t rapidbus/build-$DISTRO .
-docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/sh rapidbus/build-$DISTRO -c "cd /opt/rapidbus/; make all; ./rapidbusd -h"
-rm -f rapidbusd-${VERSION}_${DISTRO}.tar.gz
-tar czfv rapidbusd-${VERSION}_${DISTRO}.tar.gz rapidbusd rapidbusd.conf.example
+docker build -f "Dockerfile-$DISTRO" -t "rapidbus/build-$DISTRO" .
+docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/sh "rapidbus/build-$DISTRO" -c "cd /opt/rapidbus/; make all; ./rapidbusd -h"
+rm -f "rapidbusd-${VERSION}_${DISTRO}.tar.gz"
+tar czfv "rapidbusd-${VERSION}_${DISTRO}.tar.gz" rapidbusd rapidbusd.conf.example

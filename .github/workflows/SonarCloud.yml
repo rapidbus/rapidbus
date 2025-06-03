@@ -30,7 +30,8 @@ jobs:
           autoconf-archive \
           clang-tools-13 \
           libpaho-mqtt-dev \
-          libpaho-mqtt1.3
+          libpaho-mqtt1.3 \
+          openjdk-17-jdk
           
       - uses: actions/checkout@v4
       - name: Install sonar-scanner and build-wrapper

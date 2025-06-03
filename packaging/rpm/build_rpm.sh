@@ -2,10 +2,10 @@
 
 set -e
 
-VERSION=0.1.2
+read -r VERSION < ../../src/version.txt
 
 mkdir -p SOURCES
 cd SOURCES
-tar -cvf rapidbus-${VERSION}.tar.gz ../src/
+tar -cvf rapidbus-${VERSION}.tar.gz ../../../src/
 cd ..
 rpmbuild -v -bb --clean SPECS/rapidbus.spec

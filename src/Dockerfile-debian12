@@ -1,0 +1,12 @@
+FROM debian:12
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+      gcc \
+      clang \
+      clang-tools make \
+      libpaho-mqtt-dev libpaho-mqtt1.3 \
+      cppcheck clang-format
+WORKDIR /opt
+ENV CC clang
+RUN eval $CC -v

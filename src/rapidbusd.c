@@ -281,8 +281,10 @@ void timer_callback(__attribute__((unused)) int sig) {
         if (tasks[a].interpret_as == f32) {
           memcpy(b4_helper.b, ret_data, sizeof(b4_helper.b));
           float_value = b4_helper.f;
-          snprintf(mqtt_msg, sizeof(mqtt_msg), MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
-          snprintf(csv_msg, sizeof(csv_msg), CSV_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value, ts_millis());
+          snprintf(mqtt_msg, sizeof(mqtt_msg), MQTT_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
+                   ts_millis());
+          snprintf(csv_msg, sizeof(csv_msg), CSV_PAYLOAD_FLOAT, tasks[a].node_name, tasks[a].query_name, float_value,
+                   ts_millis());
         } else {
           fprintf(stderr, "ERROR: Unsupported INTERPRET_AS (%i) for task %s ... skipping.\n", tasks[a].interpret_as,
                   tasks[a].query_name);

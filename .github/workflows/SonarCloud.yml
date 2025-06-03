@@ -32,7 +32,6 @@ jobs:
           libpaho-mqtt-dev \
           libpaho-mqtt1.3 \
           openjdk-17-jdk
-          update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
           
       - uses: actions/checkout@v4
       - name: Install sonar-scanner and build-wrapper

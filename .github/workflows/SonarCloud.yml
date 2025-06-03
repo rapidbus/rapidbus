@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '0 5 * * *' # Daily at 5:00 UTC
 
+permissions:
+  contents: read
+  security-events: read
+
 jobs:
   build:
     name: Build and analyze

@@ -10,7 +10,7 @@ set -e
 set -x
 
 DISTRO=$1
-VERSION=`cat version.txt`
+read -r VERSION < version.txt
 
 docker build -f Dockerfile-$DISTRO -t rapidbus/build-$DISTRO .
 docker run -it -v `pwd`:/opt/rapidbus --entrypoint /bin/sh rapidbus/build-$DISTRO -c "cd /opt/rapidbus/; make all; ./rapidbusd -h"
